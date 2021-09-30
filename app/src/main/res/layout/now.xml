@@ -16,6 +16,9 @@
         <variable
             name="location"
             type="String" />
+        <variable
+            name="code"
+            type="String" />
     </data>
 
     <RelativeLayout
@@ -26,7 +29,7 @@
             android:id="@+id/weather_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:background="@{weather}" />
+            app:background="@{code}" />
         <FrameLayout
             android:id="@+id/titleLayout"
             android:layout_width="match_parent"
