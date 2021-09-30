@@ -10,4 +10,5 @@ interface NowService {
     @GET("v3/weather/now.json?key=${SunnyWeatherApplication.TOKEN}&language=zh-Hans&unit=c")
     fun searchNow(@Query("location") location: String) :Call<NowResponse>
 
+
 }

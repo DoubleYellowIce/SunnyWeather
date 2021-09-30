@@ -68,6 +68,19 @@ class MainActivity : AppCompatActivity(){
             }
         }
 
+        nowViewModel.suggestionData.observe(this){
+            LogUtil.v(SunnyWeatherApplication.TestToken,"nowViewModel.suggestionData.observe")
+            if (it!=null){
+                dataBinding.apply {
+                    carWashing=it.suggestion.car_washing.brief
+                    uv=it.suggestion.uv.brief
+                    flu=it.suggestion.flu.brief
+                    dressing=it.suggestion.dressing.brief
+                }
+
+            }
+        }
+
     }
 
 }
