@@ -1,18 +1,20 @@
 package com.example.sunnyweather.ui.nowData;
 
-import android.widget.ImageView;
-import android.widget.TextView;
+import static com.example.sunnyweather.logic.model.SkyKt.getSky;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.example.sunnyweather.R;
 import androidx.databinding.BindingAdapter;
 
 import com.example.sunnyweather.LogUtil;
-import com.example.sunnyweather.R;
 import com.example.sunnyweather.SunnyWeatherApplication;
+import com.example.sunnyweather.logic.model.Sky;
+import com.example.sunnyweather.logic.network.DailyResponse;
 
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class NowResponseBindingAdapter {
 
@@ -25,36 +27,33 @@ public class NowResponseBindingAdapter {
     @BindingAdapter("background")
     public static void setBackground(ImageView background,String weather){
         LogUtil.v(SunnyWeatherApplication.TestToken,"setBackground");
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("HH:mm:ss");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+08"));
-        Date curTime=new Date(System.currentTimeMillis());
-        String time=simpleDateFormat.format(curTime);
-        Boolean beforeNight=time.compareTo("18:00:00")>=0;
         if (weather!=null){
-                if (weather.equals("晴间多云")){
-                    background.setBackgroundResource(beforeNight ? R.drawable.bg_partly_cloudy_day:R.drawable.bg_partly_cloudy_night);
-                }
-                else if (weather.equals("晴")){
-                    background.setBackgroundResource(beforeNight ?
-                            R.drawable.bg_clear_day :R.drawable.bg_clear_night);
-                }
-                else if (weather.equals("多云")){
-                    background.setBackgroundResource(R.drawable.bg_cloudy);
-                }
-                else if (weather.contains("雾")){
-                    background.setBackgroundResource(R.drawable.bg_fog);
-                }else if (weather.contains("雨")){
-                    background.setBackgroundResource(R.drawable.bg_rain);
-                }else if (weather.contains("风")){
-                    background.setBackgroundResource(R.drawable.bg_wind);
-                }else if (weather.contains("雪")){
-                    background.setBackgroundResource(R.drawable.bg_snow);
-                }else {
-                    background.setBackgroundResource(R.drawable.bg_place);
-                }
-        }else {
-                background.setBackgroundResource(R.drawable.bg_place);
+            background.setBackgroundResource(getSky(weather).getBg());
         }
+    }
+
+    @BindingAdapter("forecastItem")
+    public static void addForecastItems(LinearLayout forecastLayout, DailyResponse.Result result){
+        LogUtil.v(SunnyWeatherApplication.TestToken,"addForecastItems");
+        if (result!=null){
+                forecastLayout.removeAllViews();
+                for (DailyResponse.Daily daily:result.getDaily()){
+                    View view = LayoutInflater.from(SunnyWeatherApplication.context).inflate(R.layout.forecast_item,
+                            forecastLayout, false);
+                    TextView dateInfo = view.findViewById(R.id.dateInfo);
+                    ImageView skyIcon = view.findViewById(R.id.skyIcon);
+                    TextView skyInfo = view.findViewById(R.id.skyInfo);
+                    TextView temperatureInfo = view.findViewById(R.id.temperatureInfo);
+                    dateInfo.setText(daily.getDate());
+                    Sky sky = getSky(daily.getCode_day());
+                    skyIcon.setImageResource(sky.getIcon());
+                    skyInfo.setText(daily.getText_day());
+                    String tempText = daily.getLow()+"~"+daily.getHigh()+"℃";
+                            //daily.low.toInt() ~ ${daily.high.toInt()} ℃"
+                    temperatureInfo.setText(tempText);
+                    forecastLayout.addView(view);
+                }
 
     }
+}
 }

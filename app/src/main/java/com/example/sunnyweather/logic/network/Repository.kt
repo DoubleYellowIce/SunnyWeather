@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import java.lang.Exception
 
 object Repository {
+
      fun searchNow(location: String,result: MutableLiveData<NowResponse.Result>){
         try {
             LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchNow")
@@ -19,16 +20,18 @@ object Repository {
         }
     }
 
-//    fun searchNow(location: String) = liveData(Dispatchers.IO) {
-//        val result = try {
-//            Log.d(SunnyWeatherApplication.TestToken,"liveData")
-//            val nowResponse = SunnyWeatherNetwork.searchNow(location)
-//            Result.success(nowResponse)
-//        } catch (e: Exception) {
-//            Result.failure<NowResponse>(e)
-//        }
-//        emit(result)
-//    }
+    fun searchDaily(location: String,result: MutableLiveData<DailyResponse.Result>){
+        try {
+            LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchDaily")
+            SunnyWeatherNetwork.searchDaily(location,result)
+        }catch (e:Exception){
+
+        }
+
+    }
+
+
+
 
 
 

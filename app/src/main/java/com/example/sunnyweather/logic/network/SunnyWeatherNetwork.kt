@@ -16,15 +16,17 @@ import kotlin.coroutines.suspendCoroutine
 object SunnyWeatherNetwork {
     private val nowService =ServiceCreator.create<NowService>()
 
+    private val dailyService=ServiceCreator.create<DailyService>()
+
     fun searchNow(location :String,result: MutableLiveData<NowResponse.Result>){
         nowService.searchNow(location).enqueue(object :Callback<NowResponse>{
             override fun onResponse(call: Call<NowResponse>, response: Response<NowResponse>) {
-                LogUtil.v(SunnyWeatherApplication.TestToken,"onResponse")
+                LogUtil.v(SunnyWeatherApplication.TestToken,"searchNow.onResponse")
                 if (response.body()!=null){
                     result.value=response.body()!!.results[0]
-                    Log.d(SunnyWeatherApplication.TestToken, result.value!!.now.temperature)
+                    Log.d(SunnyWeatherApplication.TestToken,"The temperature is ${result.value!!.now.temperature}");
                 }else if (response.errorBody()!=null){
-                    LogUtil.v(SunnyWeatherApplication.TestToken,"The location can not be found")
+                    LogUtil.v(SunnyWeatherApplication.TestToken,"There is something wrong,please check")
                 }
             }
             override fun onFailure(call: Call<NowResponse>, t: Throwable) {
@@ -33,32 +35,24 @@ object SunnyWeatherNetwork {
         })
     }
 
-//    fun <T> searchNow(parameter: String,result: MutableLiveData<T>,method :String){
-//
-//        when(method){
-//            "search"->service= nowService
-//        }
-//    }
+    fun searchDaily(location: String,result: MutableLiveData<DailyResponse.Result>){
+        dailyService.searchDaily(location).enqueue(object :Callback<DailyResponse>{
+            override fun onResponse(call: Call<DailyResponse>, response: Response<DailyResponse>) {
+                LogUtil.v(SunnyWeatherApplication.TestToken,"searchDaily.onResponse")
+                if (response.body()!=null){
+                    result.value=response.body()!!.results[0]
+                }else if (response.errorBody()!=null){
+                    LogUtil.v(SunnyWeatherApplication.TestToken,"There is something wrong,please check")
+                }
+            }
+            override fun onFailure(call: Call<DailyResponse>, t: Throwable) {
+                LogUtil.v(SunnyWeatherApplication.TestToken,"onFailure")
+            }
+        })
+    }
 
 
-//    suspend fun searchNow(location:String)= nowService.searchNow(location).await()
-//
-//    private suspend fun <T> Call<T>.await(): T {
-//        return suspendCoroutine { continuation ->
-//            enqueue(object : Callback<T> {
-//                override fun onResponse(call: Call<T>, response: Response<T>) {
-//                    Log.d(SunnyWeatherApplication.TestToken,"onResponse")
-//                    val body = response.body()
-//                    if (body != null) continuation.resume(body)
-//                    else continuation.resumeWithException(
-//                        RuntimeException("response body is null"))
-//                }
-//                override fun onFailure(call: Call<T>, t: Throwable) {
-//                    Log.d(SunnyWeatherApplication.TestToken,"onFailure")
-//                    continuation.resumeWithException(t)
-//                }
-//            })
-//        }
-//    }
+
+
 }
 

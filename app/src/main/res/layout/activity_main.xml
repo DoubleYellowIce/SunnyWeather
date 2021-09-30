@@ -17,6 +17,12 @@
     <variable
         name="location"
         type="String" />
+    <variable
+        name="code"
+        type="String" />
+    <variable
+        name="dailyResponse"
+        type="com.example.sunnyweather.logic.network.DailyResponse.Result" />
     </data>
 
 <LinearLayout
@@ -40,8 +46,11 @@
                 bind:temperature="@{temperature}"
                 bind:weather="@{weather}"
                 bind:location="@{location}"
+                bind:code="@{code}"
             />
-        <include layout="@layout/forecast" />
+        <include layout="@layout/forecast"
+            bind:dailyResponse="@{dailyResponse}"
+            />
         <include layout="@layout/life_index" />
     </LinearLayout>
     </ScrollView>
