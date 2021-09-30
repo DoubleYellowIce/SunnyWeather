@@ -4,25 +4,37 @@
     >
 
     <data>
-    <variable
+        <variable
         name="nowViewModel"
         type="com.example.sunnyweather.ui.nowData.NowDataViewModel"
         />
-    <variable
+        <variable
         name="temperature"
         type="String" />
-    <variable
+        <variable
         name="weather"
         type="String" />
-    <variable
+        <variable
         name="location"
         type="String" />
-    <variable
+        <variable
         name="code"
         type="String" />
-    <variable
+        <variable
         name="dailyResponse"
         type="com.example.sunnyweather.logic.network.DailyResponse.Result" />
+        <variable
+            name="carWashing"
+            type="String" />
+        <variable
+            name="dressing"
+            type="String" />
+        <variable
+            name="uv"
+            type="String" />
+        <variable
+            name="flu"
+            type="String" />
     </data>
 
 <LinearLayout
@@ -51,7 +63,12 @@
         <include layout="@layout/forecast"
             bind:dailyResponse="@{dailyResponse}"
             />
-        <include layout="@layout/life_index" />
+        <include layout="@layout/life_index"
+            bind:carWashing="@{carWashing}"
+            bind:dressing="@{dressing}"
+            bind:flu="@{flu}"
+            bind:uv="@{uv}"
+            />
     </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -13,8 +13,8 @@ object Repository {
 
      fun searchNow(location: String,result: MutableLiveData<NowResponse.Result>){
         try {
-            LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchNow")
             SunnyWeatherNetwork.searchNow(location,result)
+            LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchNow")
         }catch (e: Exception){
 
         }
@@ -27,12 +27,14 @@ object Repository {
         }catch (e:Exception){
 
         }
-
     }
 
+    fun searchSuggestion(location: String,result: MutableLiveData<SuggestionResponse.Result>){
+        try {
+            LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchSuggestion")
+            SunnyWeatherNetwork.searchSuggestion(location,result)
+        }catch (e : Exception){
 
-
-
-
-
+        }
+    }
 }
