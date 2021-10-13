@@ -6,7 +6,7 @@ data class SuggestionResponse(val results: List<Result>) {
 
     data class Location(val id:String,val name:String,val country:String,val path:String,val timezone:String,val timezone_offset:String)
 
-    data class Suggestion (val car_washing:Car_washing,
+    data class Suggestion (val car_washing:CarWashing,
                            val dressing: Dressing,
                            val flu:Flu,
                            val sport:Sport,
@@ -14,7 +14,7 @@ data class SuggestionResponse(val results: List<Result>) {
                            val uv:Uv
                            )
 
-    data class Car_washing(val brief:String,val detail:String)
+    data class CarWashing(val brief:String,val detail:String)
 
     data class Dressing(val brief:String,val detail:String)
 

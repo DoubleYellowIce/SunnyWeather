@@ -21,7 +21,7 @@ object SunnyWeatherNetwork {
                 LogUtil.v(SunnyWeatherApplication.TestToken,"searchNow.onResponse")
                 if (response.body()!=null){
                     result.value=response.body()!!.results[0]
-                    Log.d(SunnyWeatherApplication.TestToken,"The temperature is ${result.value!!.now.temperature}");
+                    Log.d(SunnyWeatherApplication.TestToken,"The temperature is ${result.value!!.now.temperature}")
                 }else if (response.errorBody()!=null){
                     LogUtil.v(SunnyWeatherApplication.TestToken,"There is something wrong,please check")
                 }
@@ -63,7 +63,6 @@ object SunnyWeatherNetwork {
             }
         })
     }
-
 
 }
 
