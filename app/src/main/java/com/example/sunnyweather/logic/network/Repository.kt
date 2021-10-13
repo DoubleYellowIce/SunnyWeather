@@ -1,12 +1,8 @@
 package com.example.sunnyweather.logic.network
 
-
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import com.example.sunnyweather.LogUtil
 import com.example.sunnyweather.SunnyWeatherApplication
-import kotlinx.coroutines.Dispatchers
 import java.lang.Exception
 
 object Repository {

@@ -8,11 +8,10 @@ android {
 
     apply plugin: 'kotlin-kapt'
 
-
     defaultConfig {
         applicationId "com.example.sunnyweather"
         minSdk 21
-        targetSdk 31
+        targetSdk 30
         versionCode 1
         versionName "1.0"
 
@@ -29,18 +28,21 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.4.0'
@@ -57,4 +59,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'com.github.gzu-liyujiang.AndroidPicker:Common:4.0.1'
+    implementation 'com.github.gzu-liyujiang.AndroidPicker:AddressPicker:4.0.1'
+
+
 }
