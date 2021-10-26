@@ -1,5 +1,6 @@
 package com.example.sunnyweather
 
+import android.Manifest.permission.*
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -13,6 +14,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.amap.api.location.AMapLocation
+import com.amap.api.location.AMapLocationClient
+import com.amap.api.location.AMapLocationClientOption
+import com.amap.api.location.AMapLocationListener
 import com.example.sunnyweather.databinding.ActivityMainBinding
 import com.example.sunnyweather.ui.nowData.NowDataViewModel
 import com.github.gzuliyujiang.dialog.DialogConfig
@@ -24,6 +29,7 @@ import com.github.gzuliyujiang.wheelpicker.entity.CityEntity
 import com.github.gzuliyujiang.wheelpicker.entity.CountyEntity
 import com.github.gzuliyujiang.wheelpicker.entity.ProvinceEntity
 import com.github.gzuliyujiang.wheelpicker.utility.AddressJsonParser
+import com.permissionx.guolindev.PermissionX
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedListener {
@@ -35,12 +41,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
     private lateinit var locationTextView: TextView
     private lateinit var picker: AddressPicker
     private lateinit var locationRegister:SharedPreferences
-
+    private lateinit var mLocationClient:AMapLocationClient
+    private lateinit var mLocationListener:AMapLocationListener
+    private lateinit var mLocationOption:AMapLocationClientOption
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initial()
-        setStatusBarTransparent()
         observeData()
     }
 
@@ -87,7 +94,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     private fun isProvince(provinceName:String):Boolean{
         return when(provinceName){
-            "北京市","上海市","天津市"->{
+            "北京市","上海市","天津市","重庆市"->{
                 false
             }
             else -> true
@@ -104,15 +111,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         dataBinding.lifecycleOwner = this
         dataBinding.nowViewModel=nowViewModel
 
-        locationTextView=findViewById(R.id.placeName)
-
         forecastLayout=findViewById(R.id.forecastLayout)
-
         swipeRefreshLayout=findViewById(R.id.swipeRefreshLayout)
 
-        DialogConfig.setDialogStyle(DialogStyle.Three);
-
+        //when this textview is clicked,the picked will show up
+        locationTextView=findViewById(R.id.placeName)
         locationTextView.setOnClickListener(this)
+
+        //set statusBar to transparent
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+
 
         locationRegister=getSharedPreferences("locationRegister",Context.MODE_PRIVATE)
         val provinceName=locationRegister.getString("provinceName","北京市")
@@ -120,6 +128,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         nowViewModel.location.value=if (isProvince(provinceName!!)) cityName else provinceName
 
 
+        //the default setting of the picker
+        DialogConfig.setDialogStyle(DialogStyle.Two);
         picker =  AddressPicker(this);
         picker.setAddressMode(
             "city.json", AddressMode.PROVINCE_CITY,
@@ -134,24 +144,57 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
                 .countyNameField("name")
                 .build()
         )
-        picker.setDefaultValue(provinceName, cityName, "东城区")
+        picker.setDefaultValue(provinceName, cityName, "")
         picker.setOnAddressPickedListener(this)
 
+
+
+        mLocationListener= AMapLocationListener {
+            if (it != null) {
+                if (it.errorCode==0){
+                    LogUtil.d(SunnyWeatherApplication.TestToken,"AMapLocationListener work successfully,the city is "+it.city)
+
+                }else{
+                    LogUtil.d(SunnyWeatherApplication.TestToken,"AMapLocationListener's errorCode is "+it.errorCode.toString()+" and error info is "+it.errorInfo)
+
+                }
+            }else {
+                LogUtil.d(SunnyWeatherApplication.TestToken,"There is something wrong in mLocationListener")
+
+            }
+        }
+        mLocationOption=AMapLocationClientOption()
+        mLocationClient=AMapLocationClient(applicationContext).apply {
+            setLocationListener(mLocationListener)
+            setLocationOption(mLocationOption)
+        }
+        mLocationClient.startLocation()
+
+
+        PermissionX.init(this)
+            .permissions( ACCESS_FINE_LOCATION,
+                ACCESS_LOCATION_EXTRA_COMMANDS
+                )
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(deniedList, "获取GPS定位权限可以更方便获取您所在地的天气信息，为您提供更好的服务。",
+                    "欣然接受", "残忍拒绝")
+            }
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+                    Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                }
+            }
+
     }
-
-    private fun setStatusBarTransparent(){
-
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-
-    }
-
-
 
     override fun onAddressPicked(province: ProvinceEntity?, city: CityEntity?, county: CountyEntity?
     ) {
         LogUtil.v(SunnyWeatherApplication.TestToken,"the address is "+province+city+county)
         val provinceName=province?.name
         val cityName=city?.name
+        picker.setDefaultValue(province, city, county)
         nowViewModel.location.value= if (isProvince(provinceName!!)) cityName else provinceName
         nowViewModel.refreshData()
         val editor=locationRegister.edit()
@@ -164,4 +207,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         picker.show()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mLocationClient.stopLocation()
+    }
 }

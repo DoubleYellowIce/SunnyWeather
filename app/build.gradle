@@ -20,7 +20,10 @@ android {
         buildFeatures {
             dataBinding true
         }
-
+        ndk {
+            //设置支持的SO库架构（开发者可以根据需要，选择一个或多个平台的so）
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86","arm64-v8a","x86_64"
+        }
     }
 
     buildTypes {
@@ -61,6 +64,6 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
     implementation 'com.github.gzu-liyujiang.AndroidPicker:Common:4.0.1'
     implementation 'com.github.gzu-liyujiang.AndroidPicker:AddressPicker:4.0.1'
-
-
+    implementation 'com.amap.api:location:3.3.0'
+    implementation 'com.guolindev.permissionx:permissionx:1.6.0'
 }

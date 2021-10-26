@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.sunnyweather.LogUtil
 import com.example.sunnyweather.SunnyWeatherApplication
+import com.example.sunnyweather.logic.network.SuggestionResponse.Suggestion
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,6 +54,8 @@ object SunnyWeatherNetwork {
             override fun onResponse(call: Call<SuggestionResponse>, response: Response<SuggestionResponse>) {
                 LogUtil.v(SunnyWeatherApplication.TestToken,"searchSuggestion.onResponse")
                 if (response.body()!=null){
+//                    var suggestion=response.body()!!.results[0].suggestion
+
                     result.value=response.body()!!.results[0]
                 }else if (response.errorBody()!=null){
                     LogUtil.v(SunnyWeatherApplication.TestToken,"There is something wrong,please check")
