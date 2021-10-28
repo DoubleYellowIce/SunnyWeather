@@ -3,21 +3,24 @@ package com.example.sunnyweather
 import android.Manifest.permission.*
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.LocationListener
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.amap.api.location.AMapLocation
-import com.amap.api.location.AMapLocationClient
-import com.amap.api.location.AMapLocationClientOption
-import com.amap.api.location.AMapLocationListener
+import com.baidu.location.BDAbstractLocationListener
+import com.baidu.location.BDLocation
+import com.baidu.location.LocationClient
+import com.baidu.location.LocationClientOption
 import com.example.sunnyweather.databinding.ActivityMainBinding
 import com.example.sunnyweather.ui.nowData.NowDataViewModel
 import com.github.gzuliyujiang.dialog.DialogConfig
@@ -41,9 +44,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
     private lateinit var locationTextView: TextView
     private lateinit var picker: AddressPicker
     private lateinit var locationRegister:SharedPreferences
-    private lateinit var mLocationClient:AMapLocationClient
-    private lateinit var mLocationListener:AMapLocationListener
-    private lateinit var mLocationOption:AMapLocationClientOption
+    private lateinit var mLocationClient: LocationClient
+    private lateinit var mLocationListener: LocationListener
+    private lateinit var mLocationClientOption:LocationClientOption
+
+    private class LocationListener():BDAbstractLocationListener(){
+        override fun onReceiveLocation(p0: BDLocation?) {
+            if (p0!=null){
+                LogUtil.d(SunnyWeatherApplication.TestToken,"onReceiveLocation")
+                LogUtil.d(SunnyWeatherApplication.TestToken,"the latitude"+p0.latitude)
+                LogUtil.d(SunnyWeatherApplication.TestToken,"the longitude is "+p0.longitude)
+                LogUtil.d(SunnyWeatherApplication.TestToken,"the address is "+p0.address.city)
+            }
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +66,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         observeData()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun observeData(){
         nowViewModel.nowData.observe(this){
             if (it!=null){
@@ -127,6 +143,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         val cityName=locationRegister.getString("cityName","北京市")
         nowViewModel.location.value=if (isProvince(provinceName!!)) cityName else provinceName
 
+        mLocationClient= LocationClient(applicationContext)
+        mLocationListener= LocationListener()
+        mLocationClient.registerLocationListener(mLocationListener)
+        mLocationClientOption= LocationClientOption()
+        mLocationClientOption.scanSpan=1000
+        mLocationClientOption.openGps=true
+        mLocationClientOption.setIsNeedAddress(true)
+        mLocationClientOption.setCoorType("WGS84")
+        mLocationClient.locOption=mLocationClientOption
+        mLocationClient.start()
 
         //the default setting of the picker
         DialogConfig.setDialogStyle(DialogStyle.Two);
@@ -147,30 +173,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         picker.setDefaultValue(provinceName, cityName, "")
         picker.setOnAddressPickedListener(this)
 
-
-
-        mLocationListener= AMapLocationListener {
-            if (it != null) {
-                if (it.errorCode==0){
-                    LogUtil.d(SunnyWeatherApplication.TestToken,"AMapLocationListener work successfully,the city is "+it.city)
-
-                }else{
-                    LogUtil.d(SunnyWeatherApplication.TestToken,"AMapLocationListener's errorCode is "+it.errorCode.toString()+" and error info is "+it.errorInfo)
-
-                }
-            }else {
-                LogUtil.d(SunnyWeatherApplication.TestToken,"There is something wrong in mLocationListener")
-
-            }
-        }
-        mLocationOption=AMapLocationClientOption()
-        mLocationClient=AMapLocationClient(applicationContext).apply {
-            setLocationListener(mLocationListener)
-            setLocationOption(mLocationOption)
-        }
-        mLocationClient.startLocation()
-
-
         PermissionX.init(this)
             .permissions( ACCESS_FINE_LOCATION,
                 ACCESS_LOCATION_EXTRA_COMMANDS
@@ -189,6 +191,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onAddressPicked(province: ProvinceEntity?, city: CityEntity?, county: CountyEntity?
     ) {
         LogUtil.v(SunnyWeatherApplication.TestToken,"the address is "+province+city+county)
@@ -200,15 +203,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         val editor=locationRegister.edit()
         editor.putString("provinceName",provinceName)
         editor.putString("cityName",cityName)
-        editor.commit()
+        editor.apply()
     }
 
     override fun onClick(v: View?) {
         picker.show()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mLocationClient.stopLocation()
-    }
 }

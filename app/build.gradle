@@ -42,10 +42,18 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    sourceSets{
+        main{
+            jniLibs.srcDir 'libs'
+            jni.srcDirs = []    //disable automatic ndk-build
+        }
+    }
 
 }
 
+
 dependencies {
+    implementation fileTree(dir:  'libs' , include: ['*.jar'])
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.4.0'
@@ -64,6 +72,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
     implementation 'com.github.gzu-liyujiang.AndroidPicker:Common:4.0.1'
     implementation 'com.github.gzu-liyujiang.AndroidPicker:AddressPicker:4.0.1'
-    implementation 'com.amap.api:location:3.3.0'
     implementation 'com.guolindev.permissionx:permissionx:1.6.0'
 }
