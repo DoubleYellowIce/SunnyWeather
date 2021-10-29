@@ -3,7 +3,6 @@ package com.example.sunnyweather
 import android.Manifest.permission.*
 import android.content.Context
 import android.content.SharedPreferences
-import android.location.LocationListener
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -12,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +22,7 @@ import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
 import com.example.sunnyweather.databinding.ActivityMainBinding
+import com.example.sunnyweather.logic.model.getSky
 import com.example.sunnyweather.ui.nowData.NowDataViewModel
 import com.github.gzuliyujiang.dialog.DialogConfig
 import com.github.gzuliyujiang.dialog.DialogStyle
@@ -45,20 +46,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
     private lateinit var picker: AddressPicker
     private lateinit var locationRegister:SharedPreferences
     private lateinit var mLocationClient: LocationClient
-    private lateinit var mLocationListener: LocationListener
     private lateinit var mLocationClientOption:LocationClientOption
-
-    private class LocationListener():BDAbstractLocationListener(){
-        override fun onReceiveLocation(p0: BDLocation?) {
-            if (p0!=null){
-                LogUtil.d(SunnyWeatherApplication.TestToken,"onReceiveLocation")
-                LogUtil.d(SunnyWeatherApplication.TestToken,"the latitude"+p0.latitude)
-                LogUtil.d(SunnyWeatherApplication.TestToken,"the longitude is "+p0.longitude)
-                LogUtil.d(SunnyWeatherApplication.TestToken,"the address is "+p0.address.city)
-            }
-        }
-
-    }
+    private lateinit var editor:SharedPreferences.Editor
+    private lateinit var currentCity:String
+    private lateinit var mLocationListener:BDAbstractLocationListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,41 +128,72 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         //set statusBar to transparent
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-
+        //retrieve the last location which the users has chosen from SharedPreferences
+        //the default value is Beijing City
         locationRegister=getSharedPreferences("locationRegister",Context.MODE_PRIVATE)
         val provinceName=locationRegister.getString("provinceName","北京市")
         val cityName=locationRegister.getString("cityName","北京市")
+        currentCity= cityName!!
         nowViewModel.location.value=if (isProvince(provinceName!!)) cityName else provinceName
 
-        mLocationClient= LocationClient(applicationContext)
-        mLocationListener= LocationListener()
-        mLocationClient.registerLocationListener(mLocationListener)
-        mLocationClientOption= LocationClientOption()
-        mLocationClientOption.scanSpan=1000
-        mLocationClientOption.openGps=true
-        mLocationClientOption.setIsNeedAddress(true)
-        mLocationClientOption.setCoorType("WGS84")
-        mLocationClient.locOption=mLocationClientOption
-        mLocationClient.start()
+        mLocationListener=object : BDAbstractLocationListener() {
+            override fun onReceiveLocation(location: BDLocation?) {
+                LogUtil.d(SunnyWeatherApplication.TestToken,"onReceiveLocation")
+                val locatedCity=location?.city
+                val locatedProvince=location?.province
+                LogUtil.d(SunnyWeatherApplication.TestToken,"the locatedProvince is $locatedProvince")
+                LogUtil.d(SunnyWeatherApplication.TestToken,"the locatedCity is $locatedCity")
+                LogUtil.d(SunnyWeatherApplication.TestToken, "the currentCity is $currentCity")
+
+                if (locatedCity?.equals(currentCity) != true &&locatedProvince!=null){
+                    AlertDialog.Builder(this@MainActivity).apply {
+                        setTitle("温馨提示")
+                        setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
+                        setPositiveButton("是"){
+                                dialog, which->
+                                currentCity=locatedCity!!
+                                nowViewModel.location.value=locatedCity
+                                nowViewModel.refreshData()
+                                writeLocationToEditor(locatedProvince,locatedCity)
+
+                        }
+                        setNegativeButton("否"){
+                                dialog, which->
+                        }
+                    }.show()
+                }
+            }
+        }
+        mLocationClientOption= LocationClientOption().apply {
+            scanSpan=1000
+            openGps=true
+            setIsNeedAddress(true)
+            setCoorType("WGS84")
+        }
+        mLocationClient= LocationClient(applicationContext).apply {
+            registerLocationListener(mLocationListener)
+            locOption=mLocationClientOption
+            start()
+        }
 
         //the default setting of the picker
-        DialogConfig.setDialogStyle(DialogStyle.Two);
-        picker =  AddressPicker(this);
-        picker.setAddressMode(
-            "city.json", AddressMode.PROVINCE_CITY,
-            AddressJsonParser.Builder()
-                .provinceCodeField("code")
-                .provinceNameField("name")
-                .provinceChildField("city")
-                .cityCodeField("code")
-                .cityNameField("name")
-                .cityChildField("area")
-                .countyCodeField("code")
-                .countyNameField("name")
-                .build()
-        )
-        picker.setDefaultValue(provinceName, cityName, "")
-        picker.setOnAddressPickedListener(this)
+        DialogConfig.setDialogStyle(DialogStyle.Two)
+        picker =  AddressPicker(this).apply {
+            setAddressMode(
+                "city.json", AddressMode.PROVINCE_CITY,
+                AddressJsonParser.Builder()
+                    .provinceCodeField("code")
+                    .provinceNameField("name")
+                    .provinceChildField("city")
+                    .cityCodeField("code")
+                    .cityNameField("name")
+                    .cityChildField("area")
+                    .countyCodeField("code")
+                    .countyNameField("name")
+                    .build())
+            setDefaultValue(provinceName, cityName, "")
+            setOnAddressPickedListener(this@MainActivity)
+        }
 
         PermissionX.init(this)
             .permissions( ACCESS_FINE_LOCATION,
@@ -195,19 +217,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
     override fun onAddressPicked(province: ProvinceEntity?, city: CityEntity?, county: CountyEntity?
     ) {
         LogUtil.v(SunnyWeatherApplication.TestToken,"the address is "+province+city+county)
-        val provinceName=province?.name
-        val cityName=city?.name
+        val provinceName=province!!.name
+        val cityName=city!!.name
+        currentCity=cityName
         picker.setDefaultValue(province, city, county)
         nowViewModel.location.value= if (isProvince(provinceName!!)) cityName else provinceName
         nowViewModel.refreshData()
-        val editor=locationRegister.edit()
-        editor.putString("provinceName",provinceName)
-        editor.putString("cityName",cityName)
-        editor.apply()
+        writeLocationToEditor(provinceName,cityName)
+
+    }
+
+    private fun writeLocationToEditor(provinceName: String,cityName:String){
+        editor=locationRegister.edit().apply {
+            putString("provinceName",provinceName)
+            putString("cityName",cityName)
+            apply()
+        }
+
     }
 
     override fun onClick(v: View?) {
         picker.show()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mLocationClient.stop()
+    }
 }
