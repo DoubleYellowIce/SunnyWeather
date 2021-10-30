@@ -3,6 +3,10 @@ package com.example.sunnyweather
 import android.Manifest.permission.*
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -22,7 +26,6 @@ import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
 import com.example.sunnyweather.databinding.ActivityMainBinding
-import com.example.sunnyweather.logic.model.getSky
 import com.example.sunnyweather.ui.nowData.NowDataViewModel
 import com.github.gzuliyujiang.dialog.DialogConfig
 import com.github.gzuliyujiang.dialog.DialogStyle
@@ -38,18 +41,39 @@ import com.permissionx.guolindev.PermissionX
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedListener {
 
+    private var alertDialogIsShowing:Boolean=false
+
+    private var userRefusedToChangeCity:Boolean=false
+
     private lateinit var nowViewModel: NowDataViewModel
+
     private lateinit var dataBinding: ActivityMainBinding
+
     private lateinit var forecastLayout:LinearLayout
+
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
     private lateinit var locationTextView: TextView
+
     private lateinit var picker: AddressPicker
+
     private lateinit var locationRegister:SharedPreferences
+
     private lateinit var mLocationClient: LocationClient
+
     private lateinit var mLocationClientOption:LocationClientOption
+
     private lateinit var editor:SharedPreferences.Editor
+
     private lateinit var currentCity:String
+
     private lateinit var mLocationListener:BDAbstractLocationListener
+
+    private lateinit var connectivityManager: ConnectivityManager
+
+    private lateinit var activeNetwork: Network
+
+    private lateinit var locationManager: LocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +132,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun initial(){
 
 
@@ -128,6 +153,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         //set statusBar to transparent
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
+
         //retrieve the last location which the users has chosen from SharedPreferences
         //the default value is Beijing City
         locationRegister=getSharedPreferences("locationRegister",Context.MODE_PRIVATE)
@@ -135,6 +161,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         val cityName=locationRegister.getString("cityName","北京市")
         currentCity= cityName!!
         nowViewModel.location.value=if (isProvince(provinceName!!)) cityName else provinceName
+
 
         mLocationListener=object : BDAbstractLocationListener() {
             override fun onReceiveLocation(location: BDLocation?) {
@@ -145,7 +172,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
                 LogUtil.d(SunnyWeatherApplication.TestToken,"the locatedCity is $locatedCity")
                 LogUtil.d(SunnyWeatherApplication.TestToken, "the currentCity is $currentCity")
 
-                if (locatedCity?.equals(currentCity) != true &&locatedProvince!=null){
+                //if the locatedCity is not null and not the same as the city whose weather information is currently showing
+                //and there isn't already a alertDialog showing
+                //and the users have not refused once
+                //ask the user if him/her would like to see the locatedCity's weather information
+                if (locatedCity?.equals(currentCity) != true
+                    &&locatedProvince!=null
+                    &&!alertDialogIsShowing
+                    &&!userRefusedToChangeCity){
+                        alertDialogIsShowing=true
                     AlertDialog.Builder(this@MainActivity).apply {
                         setTitle("温馨提示")
                         setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
@@ -155,12 +190,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
                                 nowViewModel.location.value=locatedCity
                                 nowViewModel.refreshData()
                                 writeLocationToEditor(locatedProvince,locatedCity)
-
+                                alertDialogIsShowing=false
                         }
                         setNegativeButton("否"){
                                 dialog, which->
+                                userRefusedToChangeCity=true
+                                alertDialogIsShowing=false
                         }
                     }.show()
+                }else if (locatedProvince==null&&locatedCity==null){
+                    val locationPermissionIsGranted=PermissionX.isGranted(SunnyWeatherApplication.context, ACCESS_FINE_LOCATION)
+                    if (!locationPermissionIsGranted){
+                        Toast.makeText(this@MainActivity,"无法获取定位权限。", Toast.LENGTH_SHORT).show()
+                    }else{
+                        locationManager=SunnyWeatherApplication.context.getSystemService(LocationManager::class.java)
+                        connectivityManager= SunnyWeatherApplication.context.getSystemService(ConnectivityManager::class.java)
+                        activeNetwork=connectivityManager.activeNetwork!!
+                        val caps=connectivityManager.getNetworkCapabilities(activeNetwork)
+                        if (!caps!!.hasCapability(NetworkCapabilities.NET_CAPABILITY_SUPL)){
+                            //TODO:try to determine why the location function is not working 
+                        }
+                    }
+
                 }
             }
         }
