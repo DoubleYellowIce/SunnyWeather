@@ -1,5 +1,6 @@
 package com.example.sunnyweather.logic.network
 
+//contains today's weather information
 data class NowResponse(val results: List<Result>)   {
 
     data class Result(val location: Location,val now: Now,val last_update: String)

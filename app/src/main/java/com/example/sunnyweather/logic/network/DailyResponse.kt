@@ -1,5 +1,6 @@
 package com.example.sunnyweather.logic.network
 
+//it contains three-day weather forecast information
 data class DailyResponse(val results :List<Result>) {
 
     data class Result(val location: Location,val daily:List<Daily>,val last_update:String)
