@@ -1,5 +1,9 @@
 package com.example.sunnyweather.logic.network
 
+//contains today's suggestion
+//such as whether or not it's appropriate to wash a car
+//or the possibility to catch a cold
+//and so on
 data class SuggestionResponse(val results: List<Result>) {
 
     data class Result(val location: Location,val suggestion:Suggestion,val last_update:String)

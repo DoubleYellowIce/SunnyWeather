@@ -3,12 +3,7 @@ package com.example.sunnyweather
 import android.Manifest.permission.*
 import android.content.Context
 import android.content.SharedPreferences
-import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.os.Build
-import android.os.Bundle
+import android.os.*
 import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -19,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
@@ -41,9 +35,9 @@ import com.permissionx.guolindev.PermissionX
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedListener {
 
-    private var alertDialogIsShowing:Boolean=false
-
-    private var userRefusedToChangeCity:Boolean=false
+    companion object{
+        lateinit var refreshDataHandler:Handler
+    }
 
     private lateinit var nowViewModel: NowDataViewModel
 
@@ -57,6 +51,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     private lateinit var picker: AddressPicker
 
+    //store the city the user had chosen the last time
     private lateinit var locationRegister:SharedPreferences
 
     private lateinit var mLocationClient: LocationClient
@@ -65,15 +60,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     private lateinit var editor:SharedPreferences.Editor
 
+    //the city whose weather information is showing
     private lateinit var currentCity:String
 
     private lateinit var mLocationListener:BDAbstractLocationListener
-
-    private lateinit var connectivityManager: ConnectivityManager
-
-    private lateinit var activeNetwork: Network
-
-    private lateinit var locationManager: LocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,11 +108,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         swipeRefreshLayout.setOnRefreshListener() {
             LogUtil.d(SunnyWeatherApplication.TestToken,"swipeRefreshLayout.setOnRefreshListener")
             nowViewModel.refreshData()
-            swipeRefreshLayout.isRefreshing=false
-            Toast.makeText(this,"刷新成功",Toast.LENGTH_SHORT).show();
         }
     }
 
+    //when the provinceName is one of "北京市","上海市","天津市","重庆市"
+    //the provinceName is actually a cityName
+    //we should treat it as cityName to get the weather information from the internet
     private fun isProvince(provinceName:String):Boolean{
         return when(provinceName){
             "北京市","上海市","天津市","重庆市"->{
@@ -134,7 +125,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initial(){
-
 
         nowViewModel=ViewModelProvider(this).get(NowDataViewModel::class.java)
         lifecycle.addObserver(nowViewModel)
@@ -153,6 +143,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         //set statusBar to transparent
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
+        //after the app refreshing the weather information
+        //the refreshDataHandler will receive a message
+        refreshDataHandler=object :Handler(Looper.getMainLooper()){
+            override fun handleMessage(msg: Message) {
+                LogUtil.d(SunnyWeatherApplication.TestToken,"handleMessage")
+                when(msg.obj){
+                    "refreshDataSuccessfully" -> Toast.makeText(this@MainActivity,"刷新成功",Toast.LENGTH_SHORT).show()
+                    "failToRefreshData" ->Toast.makeText(this@MainActivity,"刷新失败",Toast.LENGTH_SHORT).show()
+                    "networkIsNotWorking"->Toast.makeText(this@MainActivity,"网络不给力，请检查WIFI或者蜂窝网络是否已开启。",Toast.LENGTH_SHORT).show()
+                }
+                swipeRefreshLayout.isRefreshing=false
+            }
+        }
 
         //retrieve the last location which the users has chosen from SharedPreferences
         //the default value is Beijing City
@@ -172,49 +175,39 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
                 LogUtil.d(SunnyWeatherApplication.TestToken,"the locatedCity is $locatedCity")
                 LogUtil.d(SunnyWeatherApplication.TestToken, "the currentCity is $currentCity")
 
-                //if the locatedCity is not null and not the same as the city whose weather information is currently showing
-                //and there isn't already a alertDialog showing
-                //and the users have not refused once
+                //the default setting is to locate the user's position only once
+                //when both the locatedCity and locatedProvince are not null
+                //then it means that the app locate successfully,
+                //then the app will stop locating
+                //if the locatedCity is not the same as the city whose weather information is currently showing
                 //ask the user if him/her would like to see the locatedCity's weather information
-                if (locatedCity?.equals(currentCity) != true
-                    &&locatedProvince!=null
-                    &&!alertDialogIsShowing
-                    &&!userRefusedToChangeCity){
-                        alertDialogIsShowing=true
-                    AlertDialog.Builder(this@MainActivity).apply {
-                        setTitle("温馨提示")
-                        setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
-                        setPositiveButton("是"){
-                                dialog, which->
-                                currentCity=locatedCity!!
+                //if the locatedCity is the same as the city,the app will not do anything
+                    if (locatedProvince!=null&&locatedCity!=null){
+
+                    if (locatedCity != currentCity){
+                        AlertDialog.Builder(this@MainActivity).apply {
+                            setTitle("温馨提示")
+                            setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
+                            setPositiveButton("是"){
+                                    dialog, which->
+                                currentCity=locatedCity
                                 nowViewModel.location.value=locatedCity
                                 nowViewModel.refreshData()
                                 writeLocationToEditor(locatedProvince,locatedCity)
-                                alertDialogIsShowing=false
-                        }
-                        setNegativeButton("否"){
-                                dialog, which->
-                                userRefusedToChangeCity=true
-                                alertDialogIsShowing=false
-                        }
-                    }.show()
-                }else if (locatedProvince==null&&locatedCity==null){
-                    val locationPermissionIsGranted=PermissionX.isGranted(SunnyWeatherApplication.context, ACCESS_FINE_LOCATION)
-                    if (!locationPermissionIsGranted){
-                        Toast.makeText(this@MainActivity,"无法获取定位权限。", Toast.LENGTH_SHORT).show()
-                    }else{
-                        locationManager=SunnyWeatherApplication.context.getSystemService(LocationManager::class.java)
-                        connectivityManager= SunnyWeatherApplication.context.getSystemService(ConnectivityManager::class.java)
-                        activeNetwork=connectivityManager.activeNetwork!!
-                        val caps=connectivityManager.getNetworkCapabilities(activeNetwork)
-                        if (!caps!!.hasCapability(NetworkCapabilities.NET_CAPABILITY_SUPL)){
-                            //TODO:try to determine why the location function is not working 
-                        }
+                            }
+                            setNegativeButton("否"){
+                                    dialog, which->
+                                //do nothing
+                            }
+                        }.show()
                     }
-
+                    mLocationClient.stop()
                 }
             }
         }
+
+
+        //WGS84 is the international coordination type
         mLocationClientOption= LocationClientOption().apply {
             scanSpan=1000
             openGps=true
@@ -247,8 +240,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         }
 
         PermissionX.init(this)
-            .permissions( ACCESS_FINE_LOCATION,
-                ACCESS_LOCATION_EXTRA_COMMANDS
+            .permissions( ACCESS_FINE_LOCATION
                 )
             .onExplainRequestReason { scope, deniedList ->
                 scope.showRequestReasonDialog(deniedList, "获取GPS定位权限可以更方便获取您所在地的天气信息，为您提供更好的服务。",
@@ -271,7 +263,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         val provinceName=province!!.name
         val cityName=city!!.name
         currentCity=cityName
-        picker.setDefaultValue(province, city, county)
         nowViewModel.location.value= if (isProvince(provinceName!!)) cityName else provinceName
         nowViewModel.refreshData()
         writeLocationToEditor(provinceName,cityName)
@@ -291,8 +282,4 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         picker.show()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mLocationClient.stop()
-    }
 }

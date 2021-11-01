@@ -1,8 +1,5 @@
 package com.example.sunnyweather.ui.nowData
 
-
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.sunnyweather.LogUtil
 import com.example.sunnyweather.SunnyWeatherApplication
@@ -10,8 +7,6 @@ import com.example.sunnyweather.logic.network.DailyResponse
 import com.example.sunnyweather.logic.network.NowResponse
 import com.example.sunnyweather.logic.network.Repository
 import com.example.sunnyweather.logic.network.SuggestionResponse
-
-
 
 class NowDataViewModel :ViewModel(),LifecycleObserver{
 

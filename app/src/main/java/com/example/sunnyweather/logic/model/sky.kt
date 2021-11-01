@@ -2,9 +2,10 @@ package com.example.sunnyweather.logic.model
 
 import com.example.sunnyweather.R
 
-//详情参考心知天气api
+//the aim of this class is to map the weather code to the Sky class which contains the background image and icon image
+//if you want to know more specifically,please check the Xinzhi Weather API(the link below)
 //https://seniverse.yuque.com/books/share/e52aa43f-8fe9-4ffa-860d-96c0f3cf1c49/yev2c3
-//图片命名中i代表icon
+//the letter i in the name of icon image stands for icon
 
 class Sky ( val bg:Int,val icon: Int)
 private val sky = mapOf(
