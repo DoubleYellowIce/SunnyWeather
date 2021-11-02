@@ -3,6 +3,14 @@
 
 # 简介
 SunnyWeather是一款简单的安卓天气应用。</br></br>
+
+**开发目的**</br>
+开发该项的目的主要有3个。
+* 学习Kotlin语言。
+* 学习如何使用Retrofit第三方库从服务器获取数据。
+* 学习如何利用MVVM框架构建一个应用</br></br>
+
+
 **语言**</br>
 SunnyWeather使用Kotlin和Java混合开发,语言占比如下图所示。</br>
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=DoubleYellowIce&exclude_repo=MagaCommunity)</br></br>
@@ -24,10 +32,10 @@ SunnyWeather使用Kotlin和Java混合开发,语言占比如下图所示。</br>
 * [AndroidPicker](https://github.com/gzu-liyujiang/AndroidPicker)</br></br>
 
 **进度**</br>
-目前该项目已经完成了七七八八，尽管后面可能会添加一些小功能，比如说天气推送，但不会再大幅度改动。
+目前该项目已经完成了七七八八，尽管后面可能还会添加一些小功能，比如说天气推送，但不会再大幅度改动。
 
 # 参考
-本项目主要参考了郭神的[《第一行代码》第三版](https://item.jd.com/10026226142664.html)，但由于该书距离现在已有几年时间，里面有些东西已不再适用，相比书中项目，该项目做了如下变动。</br>
+本项目主要参考了郭神的[《第一行代码》第三版](https://item.jd.com/10026226142664.html)，但由于该书发布时间距离现在已有几年时间，里面有些东西已不再适用，相比书中项目，该项目做了如下变动。</br>
 * 由于无法申请到彩云天气的API，该项目采用的是心知天气的API。
 * 同样地，由于换了API，该项目没有采用书中项目的搜索城市功能，而是采用了地址选择器。
 * 该项目添加了定位功能。
