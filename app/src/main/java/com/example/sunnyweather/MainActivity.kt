@@ -20,7 +20,7 @@ import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
 import com.example.sunnyweather.databinding.ActivityMainBinding
-import com.example.sunnyweather.ui.nowData.NowDataViewModel
+import com.example.sunnyweather.ui.nowData.ResponseViewModel
 import com.github.gzuliyujiang.dialog.DialogConfig
 import com.github.gzuliyujiang.dialog.DialogStyle
 import com.github.gzuliyujiang.wheelpicker.AddressPicker
@@ -32,14 +32,12 @@ import com.github.gzuliyujiang.wheelpicker.entity.ProvinceEntity
 import com.github.gzuliyujiang.wheelpicker.utility.AddressJsonParser
 import com.permissionx.guolindev.PermissionX
 
+/*Repository会将获取数据的状态通知该Handler，进而进行响应*/
+lateinit var refreshDataHandler:Handler
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedListener {
 
-    companion object{
-        lateinit var refreshDataHandler:Handler
-    }
-
-    private lateinit var nowViewModel: NowDataViewModel
+    private lateinit var mNowViewModel: ResponseViewModel
 
     private lateinit var dataBinding: ActivityMainBinding
 
@@ -51,7 +49,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     private lateinit var picker: AddressPicker
 
-    //store the city the user had chosen the last time
+    //存储用户上次选择的城市
     private lateinit var locationRegister:SharedPreferences
 
     private lateinit var mLocationClient: LocationClient
@@ -60,11 +58,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     private lateinit var editor:SharedPreferences.Editor
 
-    //the city whose weather information is showing
     private lateinit var currentCity:String
 
     private lateinit var mLocationListener:BDAbstractLocationListener
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initial()
@@ -73,41 +71,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun observeData(){
-        nowViewModel.nowData.observe(this){
-            if (it!=null){
-                dataBinding.apply {
-                    temperature=it.now.temperature
-                    weather=it.now.text
-                    code=it.now.code
-                    location=it.location.name
-                }
-
-            }
-        }
-
-        nowViewModel.dailyData.observe(this){
-            LogUtil.v(SunnyWeatherApplication.TestToken,"nowViewModel.dailyData.observe")
-            if (it!=null){
-                dataBinding.dailyResponse=it
-            }
-        }
-
-        nowViewModel.suggestionData.observe(this){
-            LogUtil.v(SunnyWeatherApplication.TestToken,"nowViewModel.suggestionData.observe")
-            if (it!=null){
-                dataBinding.apply {
-                    carWashing=it.suggestion.car_washing.brief
-                    uv=it.suggestion.uv.brief
-                    flu=it.suggestion.flu.brief
-                    dressing=it.suggestion.dressing.brief
-                }
-
-            }
-        }
-
         swipeRefreshLayout.setOnRefreshListener() {
             LogUtil.d(SunnyWeatherApplication.TestToken,"swipeRefreshLayout.setOnRefreshListener")
-            nowViewModel.refreshData()
+            mNowViewModel.refreshData()
         }
     }
 
@@ -126,12 +92,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initial(){
 
-        nowViewModel=ViewModelProvider(this).get(NowDataViewModel::class.java)
-        lifecycle.addObserver(nowViewModel)
+        mNowViewModel=ViewModelProvider(this).get(ResponseViewModel::class.java)
+        lifecycle.addObserver(mNowViewModel)
 
         dataBinding=DataBindingUtil.setContentView(this,R.layout.activity_main)
         dataBinding.lifecycleOwner = this
-        dataBinding.nowViewModel=nowViewModel
+        dataBinding.nowViewModel=mNowViewModel
 
         forecastLayout=findViewById(R.id.forecastLayout)
         swipeRefreshLayout=findViewById(R.id.swipeRefreshLayout)
@@ -163,7 +129,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         val provinceName=locationRegister.getString("provinceName","北京市")
         val cityName=locationRegister.getString("cityName","北京市")
         currentCity= cityName!!
-        nowViewModel.location.value=if (isProvince(provinceName!!)) cityName else provinceName
+        mNowViewModel.location.value=if (isProvince(provinceName!!)) cityName else provinceName
 
 
         mLocationListener=object : BDAbstractLocationListener() {
@@ -191,8 +157,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
                             setPositiveButton("是"){
                                     dialog, which->
                                 currentCity=locatedCity
-                                nowViewModel.location.value=locatedCity
-                                nowViewModel.refreshData()
+                                mNowViewModel.location.value=locatedCity
+                                mNowViewModel.refreshData()
                                 writeLocationToEditor(locatedProvince,locatedCity)
                             }
                             setNegativeButton("否"){
@@ -217,7 +183,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         mLocationClient= LocationClient(applicationContext).apply {
             registerLocationListener(mLocationListener)
             locOption=mLocationClientOption
-            start()
         }
 
         //the default setting of the picker
@@ -248,7 +213,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
             }
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
-                    Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                    mLocationClient.start()
                 } else {
                     Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
                 }
@@ -263,10 +228,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
         val provinceName=province!!.name
         val cityName=city!!.name
         currentCity=cityName
-        nowViewModel.location.value= if (isProvince(provinceName!!)) cityName else provinceName
-        nowViewModel.refreshData()
+        mNowViewModel.location.value= if (isProvince(provinceName!!)) cityName else provinceName
+        mNowViewModel.refreshData()
         writeLocationToEditor(provinceName,cityName)
-
     }
 
     private fun writeLocationToEditor(provinceName: String,cityName:String){

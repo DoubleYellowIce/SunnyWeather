@@ -6,19 +6,8 @@
     <data>
         <variable
             name="nowViewModel"
-            type="com.example.sunnyweather.ui.nowData.NowDataViewModel" />
-        <variable
-            name="temperature"
-            type="String" />
-        <variable
-            name="weather"
-            type="String" />
-        <variable
-            name="location"
-            type="String" />
-        <variable
-            name="code"
-            type="String" />
+            type="com.example.sunnyweather.ui.nowData.ResponseViewModel" />
+
     </data>
 
     <RelativeLayout
@@ -29,7 +18,7 @@
             android:id="@+id/weather_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:background="@{code}" />
+            app:background="@{nowViewModel.nowData.now.code}" />
         <FrameLayout
             android:id="@+id/titleLayout"
             android:layout_width="match_parent"
@@ -65,7 +54,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/text_color"
                 android:textSize="70sp"
-                app:temperature="@{temperature}" />
+                app:temperature="@{nowViewModel.nowData.now.temperature}" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -77,7 +66,7 @@
                     android:id="@+id/currentSky"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{weather}"
+                    android:text="@{nowViewModel.nowData.now.text}"
                     android:textColor="@color/text_color"
                     android:textSize="18sp"
                     />

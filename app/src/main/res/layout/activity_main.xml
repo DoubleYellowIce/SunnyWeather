@@ -6,35 +6,8 @@
     <data>
         <variable
         name="nowViewModel"
-        type="com.example.sunnyweather.ui.nowData.NowDataViewModel"
+        type="com.example.sunnyweather.ui.nowData.ResponseViewModel"
         />
-        <variable
-        name="temperature"
-        type="String" />
-        <variable
-        name="weather"
-        type="String" />
-        <variable
-        name="location"
-        type="String" />
-        <variable
-        name="code"
-        type="String" />
-        <variable
-        name="dailyResponse"
-        type="com.example.sunnyweather.logic.network.DailyResponse.Result" />
-        <variable
-            name="carWashing"
-            type="String" />
-        <variable
-            name="dressing"
-            type="String" />
-        <variable
-            name="uv"
-            type="String" />
-        <variable
-            name="flu"
-            type="String" />
     </data>
 
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -56,19 +29,12 @@
         android:layout_height="wrap_content">
         <include layout="@layout/now"
                 bind:nowViewModel="@{nowViewModel}"
-                bind:temperature="@{temperature}"
-                bind:weather="@{weather}"
-                bind:location="@{location}"
-                bind:code="@{code}"
             />
         <include layout="@layout/forecast"
-            bind:dailyResponse="@{dailyResponse}"
+            bind:nowViewModel="@{nowViewModel}"
             />
         <include layout="@layout/life_index"
-            bind:carWashing="@{carWashing}"
-            bind:dressing="@{dressing}"
-            bind:flu="@{flu}"
-            bind:uv="@{uv}"
+            bind:nowViewModel="@{nowViewModel}"
             />
     </LinearLayout>
     </ScrollView>

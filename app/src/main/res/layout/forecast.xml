@@ -4,8 +4,12 @@
 
     <data>
         <variable
+            name="nowViewModel"
+            type="com.example.sunnyweather.ui.nowData.ResponseViewModel"
+            />
+        <variable
             name="dailyResponse"
-            type="com.example.sunnyweather.logic.network.DailyResponse.Result"
+            type="com.example.sunnyweather.logic.model.DailyResponse.Result"
             />
     </data>
 
@@ -35,7 +39,8 @@
                 android:textSize="20sp" />
 
             <LinearLayout
-                app:forecastItem="@{dailyResponse}"
+
+                app:forecastItem="@{nowViewModel.dailyData}"
                 android:id="@+id/forecastLayout"
                 android:orientation="vertical"
                 android:layout_width="match_parent"

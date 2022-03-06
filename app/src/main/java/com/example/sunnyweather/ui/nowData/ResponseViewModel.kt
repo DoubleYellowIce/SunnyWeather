@@ -3,12 +3,12 @@ package com.example.sunnyweather.ui.nowData
 import androidx.lifecycle.*
 import com.example.sunnyweather.LogUtil
 import com.example.sunnyweather.SunnyWeatherApplication
-import com.example.sunnyweather.logic.network.DailyResponse
-import com.example.sunnyweather.logic.network.NowResponse
+import com.example.sunnyweather.logic.model.DailyResponse
+import com.example.sunnyweather.logic.model.NowResponse
 import com.example.sunnyweather.logic.network.Repository
-import com.example.sunnyweather.logic.network.SuggestionResponse
+import com.example.sunnyweather.logic.model.SuggestionResponse
 
-class NowDataViewModel :ViewModel(),LifecycleObserver{
+class ResponseViewModel :ViewModel(),LifecycleObserver{
 
 
     val nowData= MutableLiveData<NowResponse.Result>()
@@ -19,16 +19,12 @@ class NowDataViewModel :ViewModel(),LifecycleObserver{
 
     val location=MutableLiveData<String>()
 
-
-
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun  refreshData(){
-        LogUtil.v(SunnyWeatherApplication.TestToken,"nowViewModel ON_RESUME")
-
+            LogUtil.v(SunnyWeatherApplication.TestToken,"nowViewModel ON_RESUME")
             val location=location.value
             Repository.searchNow(location!!,nowData)
             Repository.searchDaily(location,dailyData)
             Repository.searchSuggestion(location,suggestionData)
-
     }
 }

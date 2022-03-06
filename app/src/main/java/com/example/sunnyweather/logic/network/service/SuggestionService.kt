@@ -1,6 +1,7 @@
-package com.example.sunnyweather.logic.network
+package com.example.sunnyweather.logic.network.service
 
 import com.example.sunnyweather.SunnyWeatherApplication
+import com.example.sunnyweather.logic.model.SuggestionResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.Call

@@ -16,7 +16,6 @@ class SunnyWeatherApplication :Application() {
     override fun onCreate() {
         super.onCreate()
         context =applicationContext
-
     }
 
 }

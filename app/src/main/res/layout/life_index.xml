@@ -3,17 +3,10 @@
 
     <data>
         <variable
-            name="carWashing"
-            type="String" />
-        <variable
-            name="dressing"
-            type="String" />
-        <variable
-            name="uv"
-            type="String" />
-        <variable
-            name="flu"
-            type="String" />
+            name="nowViewModel"
+            type="com.example.sunnyweather.ui.nowData.ResponseViewModel"
+            />
+
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -74,7 +67,7 @@
 
                         <TextView
                             android:id="@+id/coldRiskText"
-                            android:text="@{flu}"
+                            android:text="@{nowViewModel.suggestionData.suggestion.flu.brief}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -116,7 +109,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:textSize="16sp"
-                            android:text="@{dressing}"
+                            android:text="@{nowViewModel.suggestionData.suggestion.dressing.brief}"
                             android:textColor="?android:attr/textColorPrimary" />
                     </LinearLayout>
                 </RelativeLayout>
@@ -159,7 +152,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="@{uv}"
+                            android:text="@{nowViewModel.suggestionData.suggestion.uv.brief}"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
                     </LinearLayout>
@@ -198,7 +191,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:textSize="16sp"
-                            android:text="@{carWashing}"
+                            android:text="@{nowViewModel.suggestionData.suggestion.car_washing.brief}"
                             android:textColor="?android:attr/textColorPrimary" />
                     </LinearLayout>
                 </RelativeLayout>

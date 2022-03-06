@@ -4,6 +4,9 @@ import androidx.annotation.NonNull
 import androidx.lifecycle.MutableLiveData
 import com.example.sunnyweather.LogUtil
 import com.example.sunnyweather.SunnyWeatherApplication
+import com.example.sunnyweather.logic.model.DailyResponse
+import com.example.sunnyweather.logic.model.NowResponse
+import com.example.sunnyweather.logic.model.SuggestionResponse
 import java.lang.Exception
 
 object Repository {

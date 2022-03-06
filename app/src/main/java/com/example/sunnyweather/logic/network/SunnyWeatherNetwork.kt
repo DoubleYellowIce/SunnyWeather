@@ -6,6 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import com.example.sunnyweather.LogUtil
 import com.example.sunnyweather.MainActivity
 import com.example.sunnyweather.SunnyWeatherApplication
+import com.example.sunnyweather.logic.model.DailyResponse
+import com.example.sunnyweather.logic.model.NowResponse
+import com.example.sunnyweather.logic.model.SuggestionResponse
+import com.example.sunnyweather.logic.network.service.DailyService
+import com.example.sunnyweather.logic.network.service.NowService
+import com.example.sunnyweather.logic.network.service.SuggestionService
+import com.example.sunnyweather.refreshDataHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,16 +41,19 @@ object SunnyWeatherNetwork {
                     LogUtil.v(SunnyWeatherApplication.TestToken,"There is something wrong,please check")
                     message.obj="failToRefreshData"
                 }
-                MainActivity.refreshDataHandler.sendMessage(message)
+                refreshDataHandler.sendMessage(message)
             }
             override fun onFailure(call: Call<NowResponse>, t: Throwable) {
                 LogUtil.v(SunnyWeatherApplication.TestToken,"onFailure")
                 val message=Message.obtain()
                 message.obj="networkIsNotWorking"
-                MainActivity.refreshDataHandler.sendMessage(message)
+                refreshDataHandler.sendMessage(message)
+
             }
         })
     }
+
+
 
     fun searchDaily(location: String,result: MutableLiveData<DailyResponse.Result>){
         dailyService.searchDaily(location).enqueue(object :Callback<DailyResponse>{

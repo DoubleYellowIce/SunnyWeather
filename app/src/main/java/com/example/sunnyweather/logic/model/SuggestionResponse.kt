@@ -1,4 +1,4 @@
-package com.example.sunnyweather.logic.network
+package com.example.sunnyweather.logic.model
 
 //contains today's suggestion
 //such as whether or not it's appropriate to wash a car
@@ -6,16 +6,16 @@ package com.example.sunnyweather.logic.network
 //and so on
 data class SuggestionResponse(val results: List<Result>) {
 
-    data class Result(val location: Location,val suggestion:Suggestion,val last_update:String)
+    data class Result(val location: Location, val suggestion: Suggestion, val last_update:String)
 
     data class Location(val id:String,val name:String,val country:String,val path:String,val timezone:String,val timezone_offset:String)
 
-    data class Suggestion (val car_washing:CarWashing,
+    data class Suggestion (val car_washing: CarWashing,
                            val dressing: Dressing,
-                           val flu:Flu,
-                           val sport:Sport,
-                           val travel:Travel,
-                           val uv:Uv
+                           val flu: Flu,
+                           val sport: Sport,
+                           val travel: Travel,
+                           val uv: Uv
                            )
 
     data class CarWashing(val brief:String,val detail:String)
@@ -29,7 +29,6 @@ data class SuggestionResponse(val results: List<Result>) {
     data class Travel(val brief:String,val detail:String)
 
     data class Uv(val brief:String,val detail:String)
-
 
 }
 

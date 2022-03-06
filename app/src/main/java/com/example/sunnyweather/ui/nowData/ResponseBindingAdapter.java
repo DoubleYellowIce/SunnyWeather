@@ -13,10 +13,10 @@ import androidx.databinding.BindingAdapter;
 import com.example.sunnyweather.LogUtil;
 import com.example.sunnyweather.SunnyWeatherApplication;
 import com.example.sunnyweather.logic.model.Sky;
-import com.example.sunnyweather.logic.network.DailyResponse;
+import com.example.sunnyweather.logic.model.DailyResponse;
 
 
-public class NowResponseBindingAdapter {
+public class ResponseBindingAdapter {
 
     @BindingAdapter("temperature")
     public static void setTemperature(TextView tempText,String temperature){
@@ -38,20 +38,20 @@ public class NowResponseBindingAdapter {
         if (result!=null){
                 forecastLayout.removeAllViews();
                 for (DailyResponse.Daily daily:result.getDaily()){
-                    View view = LayoutInflater.from(SunnyWeatherApplication.context).inflate(R.layout.forecast_item,
-                            forecastLayout, false);
-                    TextView dateInfo = view.findViewById(R.id.dateInfo);
-                    ImageView skyIcon = view.findViewById(R.id.skyIcon);
-                    TextView skyInfo = view.findViewById(R.id.skyInfo);
-                    TextView temperatureInfo = view.findViewById(R.id.temperatureInfo);
-                    dateInfo.setText(daily.getDate());
-                    Sky sky = getSky(daily.getCode_day());
-                    skyIcon.setImageResource(sky.getIcon());
-                    skyInfo.setText(daily.getText_day());
-                    String tempText = daily.getLow()+"~"+daily.getHigh()+"℃";
-                            //daily.low.toInt() ~ ${daily.high.toInt()} ℃"
-                    temperatureInfo.setText(tempText);
-                    forecastLayout.addView(view);
+                        View view = LayoutInflater.from(SunnyWeatherApplication.context).inflate(R.layout.forecast_item,
+                                forecastLayout, false);
+                        TextView dateInfo = view.findViewById(R.id.dateInfo);
+                        ImageView skyIcon = view.findViewById(R.id.skyIcon);
+                        TextView skyInfo = view.findViewById(R.id.skyInfo);
+                        TextView temperatureInfo = view.findViewById(R.id.temperatureInfo);
+                        dateInfo.setText(daily.getDate());
+                        Sky sky = getSky(daily.getCode_day());
+                        skyIcon.setImageResource(sky.getIcon());
+                        skyInfo.setText(daily.getText_day());
+                        String tempText = daily.getLow()+"~"+daily.getHigh()+"℃";
+                        //daily.low.toInt() ~ ${daily.high.toInt()} ℃"
+                        temperatureInfo.setText(tempText);
+                        forecastLayout.addView(view);
                 }
 
     }
