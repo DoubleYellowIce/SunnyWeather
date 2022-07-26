@@ -5,11 +5,11 @@
     <data>
         <variable
             name="nowViewModel"
-            type="com.example.sunnyweather.ui.nowData.ResponseViewModel"
+            type="com.sunnyweather.ui.nowData.ResponseViewModel"
             />
         <variable
             name="dailyResponse"
-            type="com.example.sunnyweather.logic.model.DailyResponse.Result"
+            type="data.Weather.DailyResponse"
             />
     </data>
 

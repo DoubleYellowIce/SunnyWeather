@@ -7,7 +7,7 @@ pluginManagement {
     plugins {
         id 'com.android.application' version '7.1.0-rc01'
         id 'com.android.library' version '7.1.0-rc01'
-        id 'org.jetbrains.kotlin.android' version '1.5.20'
+        id 'org.jetbrains.kotlin.android' version '1.7.10'
     }
 }
 dependencyResolutionManagement {
@@ -20,3 +20,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "SunnyWeather"
 include ':app'
+include ':app-data'
+include ':app_data'

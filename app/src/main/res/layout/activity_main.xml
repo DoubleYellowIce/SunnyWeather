@@ -6,7 +6,7 @@
     <data>
         <variable
         name="nowViewModel"
-        type="com.example.sunnyweather.ui.nowData.ResponseViewModel"
+            type="com.sunnyweather.ui.nowData.ResponseViewModel"
         />
     </data>
 
@@ -15,28 +15,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/weatherLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
         android:overScrollMode="never"
         android:visibility="visible">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <include layout="@layout/now"
-                bind:nowViewModel="@{nowViewModel}"
-            />
-        <include layout="@layout/forecast"
-            bind:nowViewModel="@{nowViewModel}"
-            />
-        <include layout="@layout/life_index"
-            bind:nowViewModel="@{nowViewModel}"
-            />
-    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/now"
+                bind:nowViewModel="@{nowViewModel}" />
+
+            <include
+                layout="@layout/forecast"
+                bind:nowViewModel="@{nowViewModel}" />
+
+            <include
+                layout="@layout/life_index"
+                bind:nowViewModel="@{nowViewModel}" />
+        </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

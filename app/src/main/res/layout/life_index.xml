@@ -4,7 +4,7 @@
     <data>
         <variable
             name="nowViewModel"
-            type="com.example.sunnyweather.ui.nowData.ResponseViewModel"
+            type="com.sunnyweather.ui.nowData.ResponseViewModel"
             />
 
     </data>

@@ -9,7 +9,7 @@ android {
     apply plugin: 'kotlin-kapt'
 
     defaultConfig {
-        applicationId "com.example.sunnyweather"
+        applicationId "com.sunnyweather"
         minSdk 21
         targetSdk 30
         versionCode 1
@@ -54,6 +54,7 @@ android {
 
 dependencies {
     implementation fileTree(dir:  'libs' , include: ['*.jar'])
+    implementation project(path:':app_data')
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.4.0'
