@@ -1,4 +1,4 @@
-package com.sunnyweather
+package utils
 
 import android.util.Log
 

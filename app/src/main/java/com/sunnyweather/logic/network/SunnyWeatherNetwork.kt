@@ -3,18 +3,18 @@ package com.sunnyweather.logic.network
 import android.os.Message
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.sunnyweather.LogUtil
 import com.sunnyweather.SunnyWeatherApplication
 import com.sunnyweather.logic.network.service.DailyService
 import com.sunnyweather.logic.network.service.NowService
 import com.sunnyweather.logic.network.service.SuggestionService
-import com.sunnyweather.refreshDataHandler
-import data.Weather.DailyResponse
-import data.Weather.NowResponse
-import data.Weather.SuggestionResponse
+import com.sunnyweather.main.refreshDataHandler
+import data.weather.json.DailyResponse
+import data.weather.json.NowResponse
+import data.weather.json.SuggestionResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import utils.LogUtil
 
 object SunnyWeatherNetwork {
     private val nowService =ServiceCreator.create<NowService>()

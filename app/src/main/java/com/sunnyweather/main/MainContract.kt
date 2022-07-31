@@ -1,6 +1,6 @@
-package com.sunnyweather
+package com.sunnyweather.main
 
-interface WeatherInfoContract {
+interface MainContract {
 
     interface View {
         fun handleUserLocation()

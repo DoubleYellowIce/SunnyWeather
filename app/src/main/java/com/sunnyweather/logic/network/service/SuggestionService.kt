@@ -1,7 +1,7 @@
 package com.sunnyweather.logic.network.service
 
 import com.sunnyweather.SunnyWeatherApplication
-import data.Weather.SuggestionResponse
+import data.weather.json.SuggestionResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -1,4 +1,4 @@
-package data.Weather
+package data.weather.json
 
 //contains today's weather information
 data class NowResponse(val results: List<Result>)   {

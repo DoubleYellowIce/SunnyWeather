@@ -1,7 +1,6 @@
-package com.sunnyweather
+package com.sunnyweather.main
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.*
 import android.view.View
@@ -11,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,19 +27,24 @@ import com.github.gzuliyujiang.wheelpicker.entity.CountyEntity
 import com.github.gzuliyujiang.wheelpicker.entity.ProvinceEntity
 import com.github.gzuliyujiang.wheelpicker.utility.AddressJsonParser
 import com.permissionx.guolindev.PermissionX
+import com.sunnyweather.R
+import com.sunnyweather.SunnyWeatherApplication
+import com.sunnyweather.base.BaseActivity
 import com.sunnyweather.databinding.ActivityMainBinding
-import com.sunnyweather.ui.nowData.ResponseViewModel
+import utils.LogUtil
+import javax.inject.Inject
+import javax.inject.Named
 
 /*Repository会将获取数据的状态通知该Handler，进而进行响应*/
 lateinit var refreshDataHandler:Handler
 
-class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedListener {
+class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListener {
 
-    private lateinit var mNowViewModel: ResponseViewModel
+    private lateinit var mNowViewModel: MainViewModel
 
     private lateinit var dataBinding: ActivityMainBinding
 
-    private lateinit var forecastLayout:LinearLayout
+    private lateinit var forecastLayout: LinearLayout
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
@@ -50,7 +53,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
     private lateinit var picker: AddressPicker
 
     //存储用户上次选择的城市
-    private lateinit var locationRegister:SharedPreferences
+    @Inject()
+    @Named("location")
+    lateinit var locationRegister: SharedPreferences
 
     private lateinit var mLocationClient: LocationClient
 
@@ -92,7 +97,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initial(){
 
-        mNowViewModel=ViewModelProvider(this).get(ResponseViewModel::class.java)
+        mNowViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         lifecycle.addObserver(mNowViewModel)
 
         dataBinding=DataBindingUtil.setContentView(this,R.layout.activity_main)
@@ -125,7 +130,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,OnAddressPickedLi
 
         //retrieve the last location which the users has chosen from SharedPreferences
         //the default value is Beijing City
-        locationRegister=getSharedPreferences("locationRegister",Context.MODE_PRIVATE)
+
         val provinceName=locationRegister.getString("provinceName","北京市")
         val cityName=locationRegister.getString("cityName","北京市")
         currentCity= cityName!!

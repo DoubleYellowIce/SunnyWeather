@@ -1,4 +1,4 @@
-package data.Weather
+package data.weather.json
 
 //contains today's suggestion
 //such as whether or not it's appropriate to wash a car

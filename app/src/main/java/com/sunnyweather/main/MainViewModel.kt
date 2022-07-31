@@ -1,15 +1,14 @@
-package com.sunnyweather.ui.nowData
+package com.sunnyweather.main
 
 import androidx.lifecycle.*
-import com.sunnyweather.LogUtil
 import com.sunnyweather.SunnyWeatherApplication
-import com.sunnyweather.WeatherInfoContract
 import com.sunnyweather.logic.network.Repository
-import data.Weather.DailyResponse
-import data.Weather.NowResponse
-import data.Weather.SuggestionResponse
+import data.weather.json.DailyResponse
+import data.weather.json.NowResponse
+import data.weather.json.SuggestionResponse
+import utils.LogUtil
 
-class ResponseViewModel : ViewModel(), LifecycleObserver, WeatherInfoContract.ViewModel {
+class MainViewModel : ViewModel(), LifecycleObserver, MainContract.ViewModel {
 
 
     val nowData = MutableLiveData<NowResponse.Result>()

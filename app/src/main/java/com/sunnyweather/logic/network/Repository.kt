@@ -2,11 +2,11 @@ package com.sunnyweather.logic.network
 
 import androidx.annotation.NonNull
 import androidx.lifecycle.MutableLiveData
-import com.sunnyweather.LogUtil
 import com.sunnyweather.SunnyWeatherApplication
-import data.Weather.DailyResponse
-import data.Weather.NowResponse
-import data.Weather.SuggestionResponse
+import data.weather.json.DailyResponse
+import data.weather.json.NowResponse
+import data.weather.json.SuggestionResponse
+import utils.LogUtil
 
 object Repository {
 

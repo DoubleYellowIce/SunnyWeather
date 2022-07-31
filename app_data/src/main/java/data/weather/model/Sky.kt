@@ -1,4 +1,4 @@
-package data.Weather
+package data.weather.model
 
 import com.example.app_data.R
 //the aim of this class is to map the weather code to the Sky class which contains the background image and icon image

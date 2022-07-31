@@ -1,4 +1,4 @@
-package data.Weather
+package data.weather.json
 
 //it contains three-day weather forecast information
 data class DailyResponse(val results :List<Result>) {

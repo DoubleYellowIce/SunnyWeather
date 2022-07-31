@@ -74,4 +74,10 @@ dependencies {
     implementation 'com.github.gzu-liyujiang.AndroidPicker:Common:4.0.1'
     implementation 'com.github.gzu-liyujiang.AndroidPicker:AddressPicker:4.0.1'
     implementation 'com.guolindev.permissionx:permissionx:1.6.0'
+    implementation "com.google.dagger:dagger-android:$dagger_version"
+    implementation "com.google.dagger:dagger-android-support:$dagger_version" // if you use the support libraries
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2"
 }

@@ -1,6 +1,6 @@
-package com.sunnyweather.ui.nowData;
+package com.sunnyweather.main;
 
-import static data.Weather.SkyKt.getSky;
+import static data.weather.model.SkyKt.getSky;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,26 +10,29 @@ import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 
-import com.sunnyweather.LogUtil;
 import com.sunnyweather.R;
 import com.sunnyweather.SunnyWeatherApplication;
 
-import data.Weather.DailyResponse;
-import data.Weather.Sky;
+import data.weather.json.DailyResponse;
+import data.weather.model.Sky;
+import utils.LogUtil;
 
 
-public class ResponseBindingAdapter {
+/**
+ * @author doubleyellowice
+ */
+public class MainBindingAdapter {
 
     @BindingAdapter("temperature")
-    public static void setTemperature(TextView tempText,String temperature){
-        LogUtil.v(SunnyWeatherApplication.TestToken,"setTemperature");
-        tempText.setText(temperature+"℃");
+    public static void setTemperature(TextView tempText, String temperature) {
+        LogUtil.v(SunnyWeatherApplication.TestToken, "setTemperature");
+        tempText.setText(temperature + "℃");
     }
 
     @BindingAdapter("background")
-    public static void setBackground(ImageView background,String weather){
-        LogUtil.v(SunnyWeatherApplication.TestToken,"setBackground");
-        if (weather!=null){
+    public static void setBackground(ImageView background, String weather) {
+        LogUtil.v(SunnyWeatherApplication.TestToken, "setBackground");
+        if (weather != null) {
             background.setBackgroundResource(getSky(weather).getBg());
         }
     }
