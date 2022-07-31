@@ -10,6 +10,7 @@ import utils.LogUtil
 
 class MainViewModel : ViewModel(), LifecycleObserver, MainContract.ViewModel {
 
+    lateinit var repository: Repository
 
     val nowData = MutableLiveData<NowResponse.Result>()
 
@@ -23,9 +24,9 @@ class MainViewModel : ViewModel(), LifecycleObserver, MainContract.ViewModel {
     fun refreshData() {
         LogUtil.v(SunnyWeatherApplication.TestToken, "nowViewModel ON_RESUME")
         val location = location.value
-        Repository.searchNow(location!!, nowData)
-        Repository.searchDaily(location, dailyData)
-        Repository.searchSuggestion(location, suggestionData)
+        repository.searchNow(location!!, nowData)
+        repository.searchDaily(location, dailyData)
+        repository.searchSuggestion(location, suggestionData)
     }
 
     override fun getUserLocation() {

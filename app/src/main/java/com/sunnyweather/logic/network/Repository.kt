@@ -7,22 +7,27 @@ import data.weather.json.DailyResponse
 import data.weather.json.NowResponse
 import data.weather.json.SuggestionResponse
 import utils.LogUtil
+import javax.inject.Inject
 
-object Repository {
+class Repository @Inject constructor() {
 
-     fun searchNow(@NonNull location: String, result: MutableLiveData<NowResponse.Result>){
+    @Inject
+    lateinit var sunnyWeatherNetwork: SunnyWeatherNetwork
+
+
+    fun searchNow(@NonNull location: String, result: MutableLiveData<NowResponse.Result>) {
         try {
-            SunnyWeatherNetwork.searchNow(location,result)
-            LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchNow")
-        }catch (e: Exception){
+            sunnyWeatherNetwork.searchNow(location, result)
+            LogUtil.v(SunnyWeatherApplication.TestToken, "Repository.searchNow")
+        } catch (e: Exception) {
 
         }
     }
 
-    fun searchDaily(@NonNull location: String,result: MutableLiveData<DailyResponse.Result>){
+    fun searchDaily(@NonNull location: String, result: MutableLiveData<DailyResponse.Result>){
         try {
-            LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchDaily")
-            SunnyWeatherNetwork.searchDaily(location,result)
+            LogUtil.v(SunnyWeatherApplication.TestToken, "Repository.searchDaily")
+            sunnyWeatherNetwork.searchDaily(location, result)
         }catch (e:Exception){
 
         }
@@ -30,8 +35,8 @@ object Repository {
 
     fun searchSuggestion(@NonNull location: String,result: MutableLiveData<SuggestionResponse.Result>){
         try {
-            LogUtil.v(SunnyWeatherApplication.TestToken,"Repository.searchSuggestion")
-            SunnyWeatherNetwork.searchSuggestion(location,result)
+            LogUtil.v(SunnyWeatherApplication.TestToken, "Repository.searchSuggestion")
+            sunnyWeatherNetwork.searchSuggestion(location, result)
         }catch (e : Exception){
 
         }

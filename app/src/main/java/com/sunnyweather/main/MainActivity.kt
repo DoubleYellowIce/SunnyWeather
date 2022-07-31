@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
@@ -40,7 +39,8 @@ lateinit var refreshDataHandler:Handler
 
 class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListener {
 
-    private lateinit var mNowViewModel: MainViewModel
+    @Inject
+    lateinit var mainViewModel: MainViewModel
 
     private lateinit var dataBinding: ActivityMainBinding
 
@@ -53,7 +53,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
     private lateinit var picker: AddressPicker
 
     //存储用户上次选择的城市
-    @Inject()
+    @Inject
     @Named("location")
     lateinit var locationRegister: SharedPreferences
 
@@ -77,8 +77,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
     @RequiresApi(Build.VERSION_CODES.M)
     private fun observeData(){
         swipeRefreshLayout.setOnRefreshListener() {
-            LogUtil.d(SunnyWeatherApplication.TestToken,"swipeRefreshLayout.setOnRefreshListener")
-            mNowViewModel.refreshData()
+            LogUtil.d(SunnyWeatherApplication.TestToken, "swipeRefreshLayout.setOnRefreshListener")
+            mainViewModel.refreshData()
         }
     }
 
@@ -97,12 +97,11 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initial(){
 
-        mNowViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        lifecycle.addObserver(mNowViewModel)
+        lifecycle.addObserver(mainViewModel)
 
         dataBinding=DataBindingUtil.setContentView(this,R.layout.activity_main)
         dataBinding.lifecycleOwner = this
-        dataBinding.nowViewModel=mNowViewModel
+        dataBinding.nowViewModel = mainViewModel
 
         forecastLayout=findViewById(R.id.forecastLayout)
         swipeRefreshLayout=findViewById(R.id.swipeRefreshLayout)
@@ -133,8 +132,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
 
         val provinceName=locationRegister.getString("provinceName","北京市")
         val cityName=locationRegister.getString("cityName","北京市")
-        currentCity= cityName!!
-        mNowViewModel.location.value=if (isProvince(provinceName!!)) cityName else provinceName
+        currentCity = cityName!!
+        mainViewModel.location.value = if (isProvince(provinceName!!)) cityName else provinceName
 
 
         mLocationListener=object : BDAbstractLocationListener() {
@@ -161,10 +160,10 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
                             setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
                             setPositiveButton("是"){
                                     dialog, which->
-                                currentCity=locatedCity
-                                mNowViewModel.location.value=locatedCity
-                                mNowViewModel.refreshData()
-                                writeLocationToEditor(locatedProvince,locatedCity)
+                                currentCity = locatedCity
+                                mainViewModel.location.value = locatedCity
+                                mainViewModel.refreshData()
+                                writeLocationToEditor(locatedProvince, locatedCity)
                             }
                             setNegativeButton("否"){
                                     dialog, which->
@@ -229,13 +228,13 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onAddressPicked(province: ProvinceEntity?, city: CityEntity?, county: CountyEntity?
     ) {
-        LogUtil.v(SunnyWeatherApplication.TestToken,"the address is "+province+city+county)
-        val provinceName=province!!.name
-        val cityName=city!!.name
-        currentCity=cityName
-        mNowViewModel.location.value= if (isProvince(provinceName!!)) cityName else provinceName
-        mNowViewModel.refreshData()
-        writeLocationToEditor(provinceName,cityName)
+        LogUtil.v(SunnyWeatherApplication.TestToken, "the address is " + province + city + county)
+        val provinceName = province!!.name
+        val cityName = city!!.name
+        currentCity = cityName
+        mainViewModel.location.value = if (isProvince(provinceName!!)) cityName else provinceName
+        mainViewModel.refreshData()
+        writeLocationToEditor(provinceName, cityName)
     }
 
     private fun writeLocationToEditor(provinceName: String,cityName:String){

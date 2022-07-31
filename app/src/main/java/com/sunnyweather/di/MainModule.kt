@@ -18,4 +18,5 @@ class MainModule {
     fun providePreferences(application: Application): SharedPreferences {
         return application.getSharedPreferences("location", Context.MODE_PRIVATE)
     }
+
 }
