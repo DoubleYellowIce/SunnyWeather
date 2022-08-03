@@ -68,7 +68,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_converter_gson_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
     implementation 'com.github.gzu-liyujiang.AndroidPicker:Common:4.0.1'
@@ -79,5 +79,5 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2"
+    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:$kotlinx_metadata_jvm_version"
 }
