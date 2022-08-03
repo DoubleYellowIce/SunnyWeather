@@ -16,12 +16,10 @@ import com.baidu.location.LocationClientOption
 import com.github.gzuliyujiang.dialog.DialogConfig
 import com.github.gzuliyujiang.dialog.DialogStyle
 import com.github.gzuliyujiang.wheelpicker.AddressPicker
-import com.github.gzuliyujiang.wheelpicker.annotation.AddressMode
 import com.github.gzuliyujiang.wheelpicker.contract.OnAddressPickedListener
 import com.github.gzuliyujiang.wheelpicker.entity.CityEntity
 import com.github.gzuliyujiang.wheelpicker.entity.CountyEntity
 import com.github.gzuliyujiang.wheelpicker.entity.ProvinceEntity
-import com.github.gzuliyujiang.wheelpicker.utility.AddressJsonParser
 import com.permissionx.guolindev.PermissionX
 import com.sunnyweather.R
 import com.sunnyweather.SunnyWeatherApplication
@@ -39,25 +37,19 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
 
     @Inject
     lateinit var mainViewModel: MainViewModel
-
-    private lateinit var binding: ActivityMainBinding
-
-    private lateinit var picker: AddressPicker
+    @Inject
+    lateinit var picker: AddressPicker
 
     //存储用户上次选择的城市
-    @Inject
     @Named("location")
+    @Inject
     lateinit var locationRegister: SharedPreferences
-
+    private lateinit var binding: ActivityMainBinding
     private lateinit var mLocationClient: LocationClient
-
-    private lateinit var mLocationClientOption:LocationClientOption
-
-    private lateinit var editor:SharedPreferences.Editor
-
-    private lateinit var currentCity:String
-
-    private lateinit var mLocationListener:BDAbstractLocationListener
+    private lateinit var mLocationClientOption: LocationClientOption
+    private lateinit var editor: SharedPreferences.Editor
+    private lateinit var currentCity: String
+    private lateinit var mLocationListener: BDAbstractLocationListener
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -179,29 +171,16 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
 
         //the default setting of the picker
         DialogConfig.setDialogStyle(DialogStyle.Two)
-        picker =  AddressPicker(this).apply {
-            setAddressMode(
-                "city.json", AddressMode.PROVINCE_CITY,
-                AddressJsonParser.Builder()
-                    .provinceCodeField("code")
-                    .provinceNameField("name")
-                    .provinceChildField("city")
-                    .cityCodeField("code")
-                    .cityNameField("name")
-                    .cityChildField("area")
-                    .countyCodeField("code")
-                    .countyNameField("name")
-                    .build())
-            setDefaultValue(provinceName, cityName, "")
-            setOnAddressPickedListener(this@MainActivity)
-        }
-
+        picker.setDefaultValue(provinceName, cityName, "")
         PermissionX.init(this)
-            .permissions( ACCESS_FINE_LOCATION
-                )
+            .permissions(
+                ACCESS_FINE_LOCATION
+            )
             .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(deniedList, "获取GPS定位权限可以更方便获取您所在地的天气信息，为您提供更好的服务。",
-                    "欣然接受", "残忍拒绝")
+                scope.showRequestReasonDialog(
+                    deniedList, "获取GPS定位权限可以更方便获取您所在地的天气信息，为您提供更好的服务。",
+                    "欣然接受", "残忍拒绝"
+                )
             }
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
