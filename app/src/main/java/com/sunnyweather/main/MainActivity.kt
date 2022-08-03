@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.os.*
 import android.view.View
 import android.view.WindowManager
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -42,8 +41,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     lateinit var mainViewModel: MainViewModel
 
     private lateinit var binding: ActivityMainBinding
-
-    private lateinit var locationTextView: TextView
 
     private lateinit var picker: AddressPicker
 
@@ -98,19 +95,18 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         binding.lifecycleOwner = this
         binding.nowViewModel = mainViewModel
 
-        //when this textview is clicked,the picked will show up
-        locationTextView = findViewById(R.id.placeName)
-        locationTextView.setOnClickListener(this)
+        //when this textview is clicked,the picker will show up
+        binding.placeName.setOnClickListener(this)
 
         //set statusBar to transparent
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
         //after the app refreshing the weather information
         //the refreshDataHandler will receive a message
-        refreshDataHandler=object :Handler(Looper.getMainLooper()){
+        refreshDataHandler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
-                LogUtil.d(SunnyWeatherApplication.TestToken,"handleMessage")
-                when(msg.obj){
+                LogUtil.d(SunnyWeatherApplication.TestToken, "handleMessage")
+                when (msg.obj) {
                     "refreshDataSuccessfully" -> Toast.makeText(this@MainActivity,"刷新成功",Toast.LENGTH_SHORT).show()
                     "failToRefreshData" ->Toast.makeText(this@MainActivity,"刷新失败",Toast.LENGTH_SHORT).show()
                     "networkIsNotWorking"->Toast.makeText(this@MainActivity,"网络不给力，请检查WIFI或者蜂窝网络是否已开启。",Toast.LENGTH_SHORT).show()
