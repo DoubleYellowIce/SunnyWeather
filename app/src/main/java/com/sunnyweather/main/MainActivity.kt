@@ -5,13 +5,11 @@ import android.content.SharedPreferences
 import android.os.*
 import android.view.View
 import android.view.WindowManager
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
@@ -37,16 +35,13 @@ import javax.inject.Named
 /*Repository会将获取数据的状态通知该Handler，进而进行响应*/
 lateinit var refreshDataHandler:Handler
 
-class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListener {
+class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
+    OnAddressPickedListener {
 
     @Inject
     lateinit var mainViewModel: MainViewModel
 
-    private lateinit var dataBinding: ActivityMainBinding
-
-    private lateinit var forecastLayout: LinearLayout
-
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var binding: ActivityMainBinding
 
     private lateinit var locationTextView: TextView
 
@@ -76,7 +71,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun observeData(){
-        swipeRefreshLayout.setOnRefreshListener() {
+        binding.swipeRefreshLayout.setOnRefreshListener() {
             LogUtil.d(SunnyWeatherApplication.TestToken, "swipeRefreshLayout.setOnRefreshListener")
             mainViewModel.refreshData()
         }
@@ -95,19 +90,16 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun initial(){
+    private fun initial() {
 
         lifecycle.addObserver(mainViewModel)
 
-        dataBinding=DataBindingUtil.setContentView(this,R.layout.activity_main)
-        dataBinding.lifecycleOwner = this
-        dataBinding.nowViewModel = mainViewModel
-
-        forecastLayout=findViewById(R.id.forecastLayout)
-        swipeRefreshLayout=findViewById(R.id.swipeRefreshLayout)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
+        binding.nowViewModel = mainViewModel
 
         //when this textview is clicked,the picked will show up
-        locationTextView=findViewById(R.id.placeName)
+        locationTextView = findViewById(R.id.placeName)
         locationTextView.setOnClickListener(this)
 
         //set statusBar to transparent
@@ -123,7 +115,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
                     "failToRefreshData" ->Toast.makeText(this@MainActivity,"刷新失败",Toast.LENGTH_SHORT).show()
                     "networkIsNotWorking"->Toast.makeText(this@MainActivity,"网络不给力，请检查WIFI或者蜂窝网络是否已开启。",Toast.LENGTH_SHORT).show()
                 }
-                swipeRefreshLayout.isRefreshing=false
+                binding.swipeRefreshLayout.isRefreshing = false
             }
         }
 
@@ -239,15 +231,18 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnAddressPickedListen
 
     private fun writeLocationToEditor(provinceName: String,cityName:String){
         editor=locationRegister.edit().apply {
-            putString("provinceName",provinceName)
-            putString("cityName",cityName)
+            putString("provinceName", provinceName)
+            putString("cityName", cityName)
             apply()
         }
-
     }
 
     override fun onClick(v: View?) {
         picker.show()
+    }
+
+    override fun handleUserLocation() {
+        TODO("Not yet implemented")
     }
 
 }
