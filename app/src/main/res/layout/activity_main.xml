@@ -1,46 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:app="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-        name="nowViewModel"
-            type="com.sunnyweather.main.MainViewModel"
-        />
+            name="nowViewModel"
+            type="com.sunnyweather.main.MainViewModel" />
     </data>
 
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:id="@+id/swipeRefreshLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/weatherLayout"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none"
-        android:overScrollMode="never"
-        android:visibility="visible">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/weatherLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:overScrollMode="never"
+            android:visibility="visible">
 
-            <include
-                layout="@layout/now"
-                bind:nowViewModel="@{nowViewModel}" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-            <include
-                layout="@layout/forecast"
-                bind:nowViewModel="@{nowViewModel}" />
+                <View
+                    android:id="@+id/currentWeatherView"
+                    android:layout_width="match_parent"
+                    android:layout_height="530dp"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintTop_toTopOf="parent"></View>
 
-            <include
-                layout="@layout/life_index"
-                bind:nowViewModel="@{nowViewModel}" />
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/weather_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="530dp"
+                    app:background="@{nowViewModel.nowData.now.code}"
+                    bind:layout_constraintStart_toStartOf="@id/currentWeatherView"
+                    bind:layout_constraintTop_toTopOf="@id/currentWeatherView" />
+
+                <TextView
+                    android:id="@+id/placeName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:ellipsize="middle"
+                    android:gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="@{nowViewModel.location}"
+                    android:textColor="@color/text_color"
+                    android:textSize="22sp"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/currentTemp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="100dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/text_color"
+                    android:textSize="70sp"
+                    app:temperature="@{nowViewModel.nowData.now.temperature}"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintTop_toBottomOf="@+id/placeName" />
+
+                <TextView
+                    android:id="@+id/currentSky"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:text="@{nowViewModel.nowData.now.text}"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintTop_toBottomOf="@id/currentTemp" />
+
+
+                <include
+                    android:id="@+id/currentWeatherForecastView"
+                    android:visibility="gone"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintTop_toBottomOf="@id/currentWeatherView"
+                    layout="@layout/forecast"
+                    bind:nowViewModel="@{nowViewModel}" />
+
+                <include
+                    android:visibility="gone"
+                    bind:layout_constraintStart_toStartOf="parent"
+                    bind:layout_constraintTop_toBottomOf="@id/currentWeatherForecastView"
+                    layout="@layout/life_index"
+                    bind:nowViewModel="@{nowViewModel}" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>
