@@ -104,11 +104,172 @@
                     app:layout_constraintTop_toBottomOf="@id/forecastText"></LinearLayout>
 
 
-                <include
-                    android:visibility="gone"
+                <View
+                    android:id="@+id/suggestionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toBottomOf="@id/forecastLayout"
+                    app:layout_constraintStart_toStartOf="parent"></View>
+
+
+                <TextView
+                    android:id="@+id/lifeIndexText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="20dp"
+                    android:text="生活指数"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    layout="@layout/life_index"
-                    app:nowViewModel="@{nowViewModel}" />
+                    app:layout_constraintTop_toTopOf="@id/suggestionView" />
+
+                <View
+                    android:id="@+id/firstSuggestionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintTop_toBottomOf="@id/lifeIndexText"></View>
+
+                <ImageView
+                    android:id="@+id/coldRiskImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:foregroundGravity="center_vertical"
+                    android:src="@drawable/ic_coldrisk"
+                    app:layout_constraintStart_toStartOf="@id/lifeIndexText"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/coldText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="感冒"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/coldRiskImg"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/coldSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{nowViewModel.suggestionData.suggestion.flu.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/coldText"
+                    app:layout_constraintTop_toBottomOf="@id/coldText" />
+
+                <ImageView
+
+                    android:id="@+id/dressingImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="130dp"
+                    android:src="@drawable/ic_dressing"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/dressingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="穿衣"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/dressingImg"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/dressingSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{nowViewModel.suggestionData.suggestion.dressing.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/dressingText"
+                    app:layout_constraintTop_toBottomOf="@id/dressingText" />
+
+                <View
+                    android:id="@+id/secondSuggestionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    app:layout_constraintTop_toBottomOf="@id/firstSuggestionView"></View>
+
+                <ImageView
+                    android:id="@+id/ultravioletImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic_ultraviolet"
+                    app:layout_constraintStart_toStartOf="@id/coldRiskImg"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+
+                <TextView
+                    android:id="@+id/ultravioletText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="实时紫外线"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@id/coldText"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+                <TextView
+                    android:id="@+id/ultravioletSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{nowViewModel.suggestionData.suggestion.uv.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/ultravioletText"
+                    app:layout_constraintTop_toBottomOf="@id/ultravioletText" />
+
+                <ImageView
+                    android:id="@+id/carWashingImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic_carwashing"
+                    app:layout_constraintEnd_toEndOf="@id/dressingImg"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+
+                <TextView
+                    android:id="@+id/carWashingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="洗车"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@id/dressingText"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+                <TextView
+                    android:id="@+id/carWashingSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{nowViewModel.suggestionData.suggestion.car_washing.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/carWashingText"
+                    app:layout_constraintTop_toBottomOf="@id/carWashingText" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
