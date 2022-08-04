@@ -88,7 +88,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         binding.nowViewModel = mainViewModel
 
         //when this textview is clicked,the picker will show up
-        binding.placeName.setOnClickListener(this)
+        binding.currentLocation.setOnClickListener(this)
 
         //set statusBar to transparent
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
