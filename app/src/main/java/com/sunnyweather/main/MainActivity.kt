@@ -16,10 +16,12 @@ import com.baidu.location.LocationClientOption
 import com.github.gzuliyujiang.dialog.DialogConfig
 import com.github.gzuliyujiang.dialog.DialogStyle
 import com.github.gzuliyujiang.wheelpicker.AddressPicker
+import com.github.gzuliyujiang.wheelpicker.annotation.AddressMode
 import com.github.gzuliyujiang.wheelpicker.contract.OnAddressPickedListener
 import com.github.gzuliyujiang.wheelpicker.entity.CityEntity
 import com.github.gzuliyujiang.wheelpicker.entity.CountyEntity
 import com.github.gzuliyujiang.wheelpicker.entity.ProvinceEntity
+import com.github.gzuliyujiang.wheelpicker.utility.AddressJsonParser
 import com.permissionx.guolindev.PermissionX
 import com.sunnyweather.R
 import com.sunnyweather.SunnyWeatherApplication
@@ -37,7 +39,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
 
     @Inject
     lateinit var mainViewModel: MainViewModel
-    @Inject
+
     lateinit var picker: AddressPicker
 
     //存储用户上次选择的城市
@@ -164,14 +166,30 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             setIsNeedAddress(true)
             setCoorType("WGS84")
         }
-        mLocationClient= LocationClient(applicationContext).apply {
+        mLocationClient = LocationClient(applicationContext).apply {
             registerLocationListener(mLocationListener)
-            locOption=mLocationClientOption
+            locOption = mLocationClientOption
         }
 
         //the default setting of the picker
         DialogConfig.setDialogStyle(DialogStyle.Two)
-        picker.setDefaultValue(provinceName, cityName, "")
+        picker = AddressPicker(this).apply {
+            setAddressMode(
+                "city.json", AddressMode.PROVINCE_CITY,
+                AddressJsonParser.Builder()
+                    .provinceCodeField("code")
+                    .provinceNameField("name")
+                    .provinceChildField("city")
+                    .cityCodeField("code")
+                    .cityNameField("name")
+                    .cityChildField("area")
+                    .countyCodeField("code")
+                    .countyNameField("name")
+                    .build()
+            )
+            setOnAddressPickedListener(this@MainActivity)
+            setDefaultValue(provinceName, cityName, "")
+        }
         PermissionX.init(this)
             .permissions(
                 ACCESS_FINE_LOCATION
