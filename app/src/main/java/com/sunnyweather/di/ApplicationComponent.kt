@@ -6,6 +6,7 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
+import data.di.RepositoryModule
 import javax.inject.Singleton
 
 @Singleton
@@ -14,7 +15,8 @@ import javax.inject.Singleton
         MainModule::class,
         ActivityBindingModule::class,
         NetWorkModule::class,
-        WeatherModule::class
+        WeatherModule::class,
+        RepositoryModule::class
     ]
 )
 interface ApplicationComponent : AndroidInjector<SunnyWeatherApplication> {
