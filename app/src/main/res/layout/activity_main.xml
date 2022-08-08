@@ -3,9 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
-            name="nowViewModel"
+            name="mainViewModel"
             type="com.sunnyweather.main.MainViewModel" />
+
+        <variable
+            name="currentDetailedWeather"
+            type="data.weather.json.CurrentWeather.DetailedWeather" />
+
+        <variable
+            name="weatherSuggestion"
+            type="data.weather.json.WeatherSuggestion.Suggestion" />
+
+        <variable
+            name="weatherForecastResult"
+            type="data.weather.json.WeatherForecast.Result" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -38,7 +51,7 @@
                     android:id="@+id/currentWeatherBackground"
                     android:layout_width="match_parent"
                     android:layout_height="530dp"
-                    app:background="@{nowViewModel.nowData.now.code}"
+                    app:background="@{currentDetailedWeather.weatherCode}"
                     app:layout_constraintStart_toStartOf="@id/currentWeatherView"
                     app:layout_constraintTop_toTopOf="@id/currentWeatherView" />
 
@@ -50,7 +63,7 @@
                     android:ellipsize="middle"
                     android:gravity="center_horizontal"
                     android:singleLine="true"
-                    android:text="@{nowViewModel.location}"
+                    android:text="@{mainViewModel.currentLocation}"
                     android:textColor="@color/text_color"
                     android:textSize="22sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +77,7 @@
                     android:gravity="center_horizontal"
                     android:textColor="@color/text_color"
                     android:textSize="70sp"
-                    app:temperature="@{nowViewModel.nowData.now.temperature}"
+                    android:text="@{currentDetailedWeather.temperature+'℃'}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/currentLocation" />
 
@@ -74,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:gravity="center_horizontal"
-                    android:text="@{nowViewModel.nowData.now.text}"
+                    android:text="@{currentDetailedWeather.weather}"
                     android:textColor="@color/text_color"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +112,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:forecastItem="@{nowViewModel.dailyData}"
+                    app:forecastItem="@{weatherForecastResult}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/forecastText"></LinearLayout>
 
@@ -158,7 +171,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@{nowViewModel.suggestionData.suggestion.flu.brief}"
+                    android:text="@{weatherSuggestion.flu.brief}"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@id/coldText"
@@ -193,7 +206,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@{nowViewModel.suggestionData.suggestion.dressing.brief}"
+                    android:text="@{weatherSuggestion.dressing.brief}"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@id/dressingText"
@@ -231,7 +244,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@{nowViewModel.suggestionData.suggestion.uv.brief}"
+                    android:text="@{weatherSuggestion.uv.brief}"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@id/ultravioletText"
@@ -264,7 +277,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@{nowViewModel.suggestionData.suggestion.car_washing.brief}"
+                    android:text="@{weatherSuggestion.car_washing.brief}"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/carWashingText"

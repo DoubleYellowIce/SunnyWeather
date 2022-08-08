@@ -1,16 +1,20 @@
 package data.weather.json
 
+import data.weather.model.BasicWeatherInfo
+
 //it contains three-day weather forecast information
-data class DailyResponse(val results :List<Result>) {
+data class WeatherForecast(val results: List<Result>) : BasicWeatherInfo() {
 
-    data class Result(val location: Location, val daily:List<Daily>, val last_update:String)
+    data class Result(val location: Location, val daily: List<Daily>, val last_update: String)
 
-    data class Location(val id:String,
-                        val name:String,
-                        val country:String,
-                        val path:String,
-                        val timezone:String,
-                        val timezone_offset:String)
+    data class Location(
+        val id: String,
+        val name: String,
+        val country: String,
+        val path: String,
+        val timezone: String,
+        val timezone_offset: String
+    )
 
     data class Daily(val date:String,
                      val text_day:String,

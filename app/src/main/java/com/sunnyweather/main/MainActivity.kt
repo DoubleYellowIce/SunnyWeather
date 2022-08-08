@@ -2,7 +2,10 @@ package com.sunnyweather.main
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.SharedPreferences
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -27,6 +30,8 @@ import com.sunnyweather.R
 import com.sunnyweather.SunnyWeatherApplication
 import com.sunnyweather.base.BaseActivity
 import com.sunnyweather.databinding.ActivityMainBinding
+import data.Status.*
+import data.weather.model.CombineWeatherInfo
 import utils.LogUtil
 import javax.inject.Inject
 import javax.inject.Named
@@ -38,12 +43,12 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     OnAddressPickedListener {
 
     @Inject
-    lateinit var mainViewModel: MainViewModel
+    lateinit var viewModel: MainViewModel
 
     lateinit var picker: AddressPicker
 
     //存储用户上次选择的城市
-    @Named("location")
+    @Named("currentLocation")
     @Inject
     lateinit var locationRegister: SharedPreferences
     private lateinit var binding: ActivityMainBinding
@@ -64,7 +69,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     private fun observeData(){
         binding.swipeRefreshLayout.setOnRefreshListener() {
             LogUtil.d(SunnyWeatherApplication.TestToken, "swipeRefreshLayout.setOnRefreshListener")
-            mainViewModel.refreshData()
+            getCurrentLocationCombineWeatherInfo()
         }
     }
 
@@ -83,11 +88,11 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initial() {
 
-        lifecycle.addObserver(mainViewModel)
+        lifecycle.addObserver(viewModel)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
-        binding.nowViewModel = mainViewModel
+        binding.mainViewModel = viewModel
 
         //when this textview is clicked,the picker will show up
         binding.currentLocation.setOnClickListener(this)
@@ -95,28 +100,16 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         //set statusBar to transparent
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-        //after the app refreshing the weather information
-        //the refreshDataHandler will receive a message
-        refreshDataHandler = object : Handler(Looper.getMainLooper()) {
-            override fun handleMessage(msg: Message) {
-                LogUtil.d(SunnyWeatherApplication.TestToken, "handleMessage")
-                when (msg.obj) {
-                    "refreshDataSuccessfully" -> Toast.makeText(this@MainActivity,"刷新成功",Toast.LENGTH_SHORT).show()
-                    "failToRefreshData" ->Toast.makeText(this@MainActivity,"刷新失败",Toast.LENGTH_SHORT).show()
-                    "networkIsNotWorking"->Toast.makeText(this@MainActivity,"网络不给力，请检查WIFI或者蜂窝网络是否已开启。",Toast.LENGTH_SHORT).show()
-                }
-                binding.swipeRefreshLayout.isRefreshing = false
-            }
-        }
 
-        //retrieve the last location which the users has chosen from SharedPreferences
+        //retrieve the last currentLocation which the users has chosen from SharedPreferences
         //the default value is Beijing City
 
         val provinceName=locationRegister.getString("provinceName","北京市")
         val cityName=locationRegister.getString("cityName","北京市")
         currentCity = cityName!!
-        mainViewModel.location.value = if (isProvince(provinceName!!)) cityName else provinceName
+        viewModel.currentLocation.value = if (isProvince(provinceName!!)) cityName else provinceName
 
+        getCurrentLocationCombineWeatherInfo()
 
         mLocationListener=object : BDAbstractLocationListener() {
             override fun onReceiveLocation(location: BDLocation?) {
@@ -143,8 +136,8 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
                             setPositiveButton("是"){
                                     dialog, which->
                                 currentCity = locatedCity
-                                mainViewModel.location.value = locatedCity
-                                mainViewModel.refreshData()
+                                viewModel.currentLocation.value = locatedCity
+                                getCurrentLocationCombineWeatherInfo()
                                 writeLocationToEditor(locatedProvince, locatedCity)
                             }
                             setNegativeButton("否"){
@@ -177,13 +170,13 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             setAddressMode(
                 "city.json", AddressMode.PROVINCE_CITY,
                 AddressJsonParser.Builder()
-                    .provinceCodeField("code")
+                    .provinceCodeField("weatherCode")
                     .provinceNameField("name")
                     .provinceChildField("city")
-                    .cityCodeField("code")
+                    .cityCodeField("weatherCode")
                     .cityNameField("name")
                     .cityChildField("area")
-                    .countyCodeField("code")
+                    .countyCodeField("weatherCode")
                     .countyNameField("name")
                     .build()
             )
@@ -217,17 +210,52 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         val provinceName = province!!.name
         val cityName = city!!.name
         currentCity = cityName
-        mainViewModel.location.value = if (isProvince(provinceName!!)) cityName else provinceName
-        mainViewModel.refreshData()
+        viewModel.currentLocation.value = if (isProvince(provinceName!!)) cityName else provinceName
+        getCurrentLocationCombineWeatherInfo()
         writeLocationToEditor(provinceName, cityName)
     }
 
-    private fun writeLocationToEditor(provinceName: String,cityName:String){
-        editor=locationRegister.edit().apply {
+    private fun writeLocationToEditor(provinceName: String, cityName: String) {
+        editor = locationRegister.edit().apply {
             putString("provinceName", provinceName)
             putString("cityName", cityName)
             apply()
         }
+    }
+
+    private fun getCurrentLocationCombineWeatherInfo() {
+        viewModel.getCurrentLocationCombineWeatherInfo().observe(this) {
+            it?.let { response ->
+                when (response.status) {
+                    SUCCESS -> {
+                        Log.d(SunnyWeatherApplication.TestToken, "Successfully get weather info")
+                        refreshDataBinding(combineWeatherInfo = response.data!!)
+                        stopSwipeFreshLayoutFreshening()
+                    }
+                    LOADING -> {
+                        startSwipeFreshLayoutFreshening()
+                    }
+                    ERROR -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startSwipeFreshLayoutFreshening() {
+        binding.swipeRefreshLayout.isRefreshing = true
+    }
+
+    private fun stopSwipeFreshLayoutFreshening() {
+        binding.swipeRefreshLayout.isRefreshing = false
+    }
+
+    private fun refreshDataBinding(combineWeatherInfo: CombineWeatherInfo) {
+        binding.currentDetailedWeather =
+            combineWeatherInfo.currentWeather.weather[0].detailedWeather
+        binding.weatherSuggestion = combineWeatherInfo.weatherSuggestion.results[0].suggestion
+        binding.weatherForecastResult = combineWeatherInfo.weatherForecast.results[0]
     }
 
     override fun onClick(v: View?) {

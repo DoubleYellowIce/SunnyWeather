@@ -1,5 +1,9 @@
 package com.sunnyweather.main
 
+import androidx.lifecycle.LiveData
+import data.Response
+import data.weather.model.CombineWeatherInfo
+
 interface MainContract {
 
     interface View {
@@ -8,5 +12,7 @@ interface MainContract {
 
     interface ViewModel {
         fun getUserLocation()
+
+        fun getCurrentLocationCombineWeatherInfo(): LiveData<Response<CombineWeatherInfo>>
     }
 }

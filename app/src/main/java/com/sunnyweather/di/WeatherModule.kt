@@ -2,7 +2,7 @@ package com.sunnyweather.di
 
 import dagger.Module
 import dagger.Provides
-import data.weather.WeatherCloudDataStore
+import data.weather.repository.WeatherCloudDataStore
 import retrofit2.Retrofit
 import retrofit2.create
 import javax.inject.Named

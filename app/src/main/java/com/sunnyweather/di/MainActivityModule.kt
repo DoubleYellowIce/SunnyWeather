@@ -6,15 +6,18 @@ import com.sunnyweather.main.MainContract
 import com.sunnyweather.main.MainViewModel
 import dagger.Module
 import dagger.Provides
-import data.weather.repository.Repository
+import data.weather.repository.WeatherRepository
 
 @Module
 class MainActivityModule {
 
     @Provides
-    fun provideMainViewModel(mainActivity: MainActivity, repository: Repository): MainViewModel {
+    fun provideMainViewModel(
+        mainActivity: MainActivity,
+        weatherRepository: WeatherRepository
+    ): MainViewModel {
         val mainViewModel = ViewModelProvider(mainActivity).get(MainViewModel::class.java)
-        mainViewModel.repository = repository
+        mainViewModel.weatherRepository = weatherRepository
         return mainViewModel
     }
 

@@ -13,7 +13,7 @@ import androidx.databinding.BindingAdapter;
 import com.sunnyweather.R;
 import com.sunnyweather.SunnyWeatherApplication;
 
-import data.weather.json.DailyResponse;
+import data.weather.json.WeatherForecast;
 import data.weather.model.Sky;
 import utils.LogUtil;
 
@@ -23,36 +23,31 @@ import utils.LogUtil;
  */
 public class MainBindingAdapter {
 
-    @BindingAdapter("temperature")
-    public static void setTemperature(TextView tempText, String temperature) {
-        LogUtil.v(SunnyWeatherApplication.TestToken, "setTemperature");
-        tempText.setText(temperature + "℃");
-    }
 
     @BindingAdapter("background")
-    public static void setBackground(ImageView background, String weather) {
+    public static void setBackground(ImageView background, String weatherCode) {
         LogUtil.v(SunnyWeatherApplication.TestToken, "setBackground");
-        if (weather != null) {
-            background.setBackgroundResource(getSky(weather).getBg());
+        if (weatherCode != null) {
+            background.setBackgroundResource(getSky(weatherCode).getBg());
         }
     }
 
     @BindingAdapter("forecastItem")
-    public static void addForecastItems(LinearLayout forecastLayout, DailyResponse.Result result){
-        LogUtil.v(SunnyWeatherApplication.TestToken,"addForecastItems");
-        if (result!=null){
-                forecastLayout.removeAllViews();
-                for (DailyResponse.Daily daily:result.getDaily()){
-                        View view = LayoutInflater.from(SunnyWeatherApplication.context).inflate(R.layout.forecast_item,
-                                forecastLayout, false);
-                        TextView dateInfo = view.findViewById(R.id.dateInfo);
-                        ImageView skyIcon = view.findViewById(R.id.skyIcon);
-                        TextView skyInfo = view.findViewById(R.id.skyInfo);
-                        TextView temperatureInfo = view.findViewById(R.id.temperatureInfo);
-                        dateInfo.setText(daily.getDate());
-                        Sky sky = getSky(daily.getCode_day());
-                        skyIcon.setImageResource(sky.getIcon());
-                        skyInfo.setText(daily.getText_day());
+    public static void addForecastItems(LinearLayout forecastLayout, WeatherForecast.Result result) {
+        LogUtil.v(SunnyWeatherApplication.TestToken, "addForecastItems");
+        if (result != null) {
+            forecastLayout.removeAllViews();
+            for (WeatherForecast.Daily daily : result.getDaily()) {
+                View view = LayoutInflater.from(SunnyWeatherApplication.context).inflate(R.layout.forecast_item,
+                        forecastLayout, false);
+                TextView dateInfo = view.findViewById(R.id.dateInfo);
+                ImageView skyIcon = view.findViewById(R.id.skyIcon);
+                TextView skyInfo = view.findViewById(R.id.skyInfo);
+                TextView temperatureInfo = view.findViewById(R.id.temperatureInfo);
+                dateInfo.setText(daily.getDate());
+                Sky sky = getSky(daily.getCode_day());
+                skyIcon.setImageResource(sky.getIcon());
+                skyInfo.setText(daily.getText_day());
                         String tempText = daily.getLow()+"~"+daily.getHigh()+"℃";
                         //daily.low.toInt() ~ ${daily.high.toInt()} ℃"
                         temperatureInfo.setText(tempText);
