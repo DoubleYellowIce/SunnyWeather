@@ -1,6 +1,7 @@
 package com.sunnyweather.main
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.DialogInterface.OnClickListener
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -42,9 +43,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     lateinit var viewModel: MainViewModel
     private lateinit var picker: AddressPicker
     private lateinit var binding: ActivityMainBinding
-    private lateinit var mLocationClient: LocationClient
-    private lateinit var mLocationClientOption: LocationClientOption
-    private lateinit var mLocationListener: BDAbstractLocationListener
+    private lateinit var locationClient: LocationClient
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -63,7 +62,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             provinceName = viewModel.getCurrentProvinceValue(),
             cityName = viewModel.getCurrentCityValue()
         )
-        initLocationFunctions()
+        initLocationClient()
         if (permissionForLocationIsGranted()) {
             startLocateUser()
         } else {
@@ -97,49 +96,48 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
 
     }
 
-    private fun initLocationFunctions() {
-        mLocationListener = object : BDAbstractLocationListener() {
-            override fun onReceiveLocation(location: BDLocation?) {
-                LogUtil.v(msg = "onReceiveLocation")
-                val locatedCity = location?.city
-                val locatedProvince = location?.province
-                if (!locatedCityIsSameAsCurrentCity(locatedCity!!)) {
-                    askUserWillingToChangeCurrentCity(locatedProvince!!, locatedCity)
+    private fun initLocationClient() {
+        locationClient = LocationClient(applicationContext).apply {
+            registerLocationListener(object : BDAbstractLocationListener() {
+                override fun onReceiveLocation(location: BDLocation?) {
+                    val locatedCity = location?.city!!
+                    val locatedProvince = location.province!!
+                    if (locatedCityIsNotSameAsCurrentCity(locatedCity)) {
+                        val positiveCallback = OnClickListener { _, _ ->
+                            viewModel.updateProvinceAndCity(locatedProvince, locatedCity)
+                            getCurrentLocationCombineWeatherInfo()
+                        }
+                        askUserWillingToChangeCurrentCity(locatedProvince, positiveCallback)
+                    }
+                    stopLocateUser()
                 }
-                stopLocateUser()
+            })
+            locOption = LocationClientOption().apply {
+                scanSpan = 1000
+                openGps = true
+                setIsNeedAddress(true)
+                setCoorType("WGS84")
             }
-        }
-
-        mLocationClientOption = LocationClientOption().apply {
-            scanSpan = 1000
-            openGps = true
-            setIsNeedAddress(true)
-            setCoorType("WGS84")
-        }
-        mLocationClient = LocationClient(applicationContext).apply {
-            registerLocationListener(mLocationListener)
-            locOption = mLocationClientOption
         }
     }
 
-    private fun askUserWillingToChangeCurrentCity(locatedProvince: String, locatedCity: String) {
+    private fun locatedCityIsNotSameAsCurrentCity(locatedCity: String): Boolean {
+        return locatedCity != viewModel.getCurrentCityValue()
+    }
+
+    private fun askUserWillingToChangeCurrentCity(
+        locatedCity: String,
+        positiveCallback: OnClickListener
+    ) {
         AlertDialog.Builder(this@MainActivity).apply {
             setTitle("温馨提示")
             setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
-            setPositiveButton("是") { _, _ ->
-                viewModel.updateProvinceAndCity(locatedProvince, locatedCity)
-                getCurrentLocationCombineWeatherInfo()
-            }
+            setPositiveButton("是", positiveCallback)
             setNegativeButton("否") { _, _ ->
                 doNothing()
             }
         }.show()
     }
-
-    private fun locatedCityIsSameAsCurrentCity(locatedCity: String): Boolean {
-        return locatedCity == viewModel.getCurrentCityValue()
-    }
-
 
     private fun initPicker(provinceName: String, cityName: String) {
         DialogConfig.setDialogStyle(DialogStyle.Two)
@@ -163,11 +161,11 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     }
 
     private fun startLocateUser() {
-        mLocationClient.start()
+        locationClient.start()
     }
 
     private fun stopLocateUser() {
-        mLocationClient.stop()
+        locationClient.stop()
     }
 
     private fun permissionForLocationIsGranted(): Boolean {
