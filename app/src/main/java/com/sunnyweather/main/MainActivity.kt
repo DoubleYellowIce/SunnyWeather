@@ -229,13 +229,13 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             setAddressMode(
                 "city.json", AddressMode.PROVINCE_CITY,
                 AddressJsonParser.Builder()
-                    .provinceCodeField("weatherCode")
+                    .provinceCodeField("code")
                     .provinceNameField("name")
                     .provinceChildField("city")
-                    .cityCodeField("weatherCode")
+                    .cityCodeField("code")
                     .cityNameField("name")
                     .cityChildField("area")
-                    .countyCodeField("weatherCode")
+                    .countyCodeField("code")
                     .countyNameField("name")
                     .build()
             )
