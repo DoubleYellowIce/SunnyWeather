@@ -59,7 +59,10 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         viewModel.retrieveProvinceAndCityFromSP()
         transparentStatusBar()
         setUpListeners()
-        initPicker(viewModel.getCurrentProvinceValue(), viewModel.getCurrentCityValue())
+        initPicker(
+            provinceName = viewModel.getCurrentProvinceValue(),
+            cityName = viewModel.getCurrentCityValue()
+        )
         initLocationFunctions()
         if (permissionForLocationIsGranted()) {
             startLocateUser()
