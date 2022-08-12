@@ -33,13 +33,10 @@
 
 - 良好的编码风格
 
-  在如今的开发过程中，并不是说`人和项目只要有一个能跑就行`
-  ，而是需要项目具有一定的可维护性，而良好的代码风格正是可维护性基本要求之一，下面代码截取至[MainActivity.kotlin](./app/src/main/java/com/sunnyweather/main/MainActivity.kt)
-  文件。
-
+  在如今的开发过程中，并不是说`人和项目只要有一个能跑就行`，而是需要项目具有一定的可维护性，而良好的代码风格正是可维护性基本要求之一，下面代码截取至[MainActivity](./app/src/main/java/com/sunnyweather/main/MainActivity.kt)文件。
+  
   ```kotlin
       private fun init() {
-  				...
           initLocationFunctions()
           if (permissionForLocationIsGranted()) {
               startLocateUser()
@@ -56,15 +53,16 @@
           getCurrentLocationCombineWeatherInfo()
       }
   ```
-
+  
   init()方法负责执行初始化工作，即使你不知道这个应用的基本信息，从代码里大致也能推断出其内容。
-
+  
   1. 先初始化定位功能。
   2. 判断是否有定位权限。
-    1. 有。直接定位用户。
-    2. 无。去请求定位权限，当用户同意时再进行定位。
+     1. 有。直接定位用户。
+     2. 无。去请求定位权限，当用户同意时再进行定位。
+  
   3. 根据定位获取天气功能。
-
+  
   从这上面三点就可以进一步推出这个应用至少有获取用户所在城市的天气信息的功能，这样的代码在项目还有很多处，这里不一一列举了。
 
 ### 其它信息
