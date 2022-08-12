@@ -41,9 +41,9 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
 
     @Inject
     lateinit var viewModel: MainViewModel
-    private lateinit var picker: AddressPicker
-    private lateinit var binding: ActivityMainBinding
+    private var picker: AddressPicker? = null
     private var locationClient: LocationClient? = null
+    private lateinit var binding: ActivityMainBinding
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -58,10 +58,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         viewModel.retrieveProvinceAndCityFromSP()
         transparentStatusBar()
         setUpListeners()
-        initPicker(
-            provinceName = viewModel.getCurrentProvinceValue(),
-            cityName = viewModel.getCurrentCityValue()
-        )
         if (permissionForLocationIsGranted()) {
             startLocateUser()
         } else {
@@ -244,7 +240,13 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     }
 
     override fun onClick(v: View?) {
-        picker.show()
+        if (picker == null) {
+            initPicker(
+                provinceName = viewModel.getCurrentProvinceValue(),
+                cityName = viewModel.getCurrentCityValue()
+            )
+        }
+        picker!!.show()
     }
 
 }
