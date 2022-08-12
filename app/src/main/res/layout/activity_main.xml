@@ -1,46 +1,289 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
-        name="nowViewModel"
-            type="com.sunnyweather.ui.nowData.ResponseViewModel"
-        />
+            name="mainViewModel"
+            type="com.sunnyweather.main.MainViewModel" />
+
+        <variable
+            name="currentDetailedWeather"
+            type="data.weather.json.CurrentWeather.DetailedWeather" />
+
+        <variable
+            name="weatherSuggestion"
+            type="data.weather.json.WeatherSuggestion.Suggestion" />
+
+        <variable
+            name="weatherForecastResult"
+            type="data.weather.json.WeatherForecast.Result" />
     </data>
 
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:id="@+id/swipeRefreshLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/weatherLayout"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none"
-        android:overScrollMode="never"
-        android:visibility="visible">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/weatherLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:visibility="visible">
 
-            <include
-                layout="@layout/now"
-                bind:nowViewModel="@{nowViewModel}" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <include
-                layout="@layout/forecast"
-                bind:nowViewModel="@{nowViewModel}" />
+                <View
+                    android:id="@+id/currentWeatherView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="@id/currentWeatherBackground"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <include
-                layout="@layout/life_index"
-                bind:nowViewModel="@{nowViewModel}" />
-        </LinearLayout>
-    </ScrollView>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <ImageView
+                    android:id="@+id/currentWeatherBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="530dp"
+                    app:background="@{currentDetailedWeather.weatherCode}"
+                    app:layout_constraintStart_toStartOf="@id/currentWeatherView"
+                    app:layout_constraintTop_toTopOf="@id/currentWeatherView" />
+
+                <TextView
+                    android:id="@+id/currentLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:ellipsize="middle"
+                    android:gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="@{mainViewModel.currentCity}"
+                    android:textColor="@color/text_color"
+                    android:textSize="22sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/currentTemp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="100dp"
+                    android:gravity="center_horizontal"
+                    android:text="@{currentDetailedWeather.temperature+'℃'}"
+                    android:textColor="@color/text_color"
+                    android:textSize="70sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/currentLocation" />
+
+                <TextView
+                    android:id="@+id/currentSky"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:text="@{currentDetailedWeather.weather}"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/currentTemp" />
+
+
+                <TextView
+                    android:id="@+id/forecastText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="预报"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/currentWeatherView" />
+
+                <LinearLayout
+                    android:id="@+id/forecastLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:forecastItem="@{weatherForecastResult}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/forecastText"></LinearLayout>
+
+
+                <View
+                    android:id="@+id/suggestionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/forecastLayout"></View>
+
+
+                <TextView
+                    android:id="@+id/lifeIndexText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="20dp"
+                    android:text="生活指数"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/suggestionView" />
+
+                <View
+                    android:id="@+id/firstSuggestionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintTop_toBottomOf="@id/lifeIndexText"></View>
+
+                <ImageView
+                    android:id="@+id/coldRiskImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:foregroundGravity="center_vertical"
+                    android:src="@drawable/ic_coldrisk"
+                    app:layout_constraintStart_toStartOf="@id/lifeIndexText"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/coldText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="感冒"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/coldRiskImg"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/coldSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{weatherSuggestion.flu.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/coldText"
+                    app:layout_constraintTop_toBottomOf="@id/coldText" />
+
+                <ImageView
+
+                    android:id="@+id/dressingImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="130dp"
+                    android:src="@drawable/ic_dressing"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/dressingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="穿衣"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/dressingImg"
+                    app:layout_constraintTop_toTopOf="@id/firstSuggestionView" />
+
+                <TextView
+                    android:id="@+id/dressingSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{weatherSuggestion.dressing.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/dressingText"
+                    app:layout_constraintTop_toBottomOf="@id/dressingText" />
+
+                <View
+                    android:id="@+id/secondSuggestionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    app:layout_constraintTop_toBottomOf="@id/firstSuggestionView"></View>
+
+                <ImageView
+                    android:id="@+id/ultravioletImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic_ultraviolet"
+                    app:layout_constraintStart_toStartOf="@id/coldRiskImg"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+
+                <TextView
+                    android:id="@+id/ultravioletText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="实时紫外线"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@id/coldText"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+                <TextView
+                    android:id="@+id/ultravioletSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{weatherSuggestion.uv.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/ultravioletText"
+                    app:layout_constraintTop_toBottomOf="@id/ultravioletText" />
+
+                <ImageView
+                    android:id="@+id/carWashingImg"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic_carwashing"
+                    app:layout_constraintEnd_toEndOf="@id/dressingImg"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+
+                <TextView
+                    android:id="@+id/carWashingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="洗车"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@id/dressingText"
+                    app:layout_constraintTop_toTopOf="@id/secondSuggestionView" />
+
+                <TextView
+                    android:id="@+id/carWashingSuggestionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{weatherSuggestion.car_washing.brief}"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/carWashingText"
+                    app:layout_constraintTop_toBottomOf="@id/carWashingText" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

@@ -10,6 +10,7 @@ pluginManagement {
         id 'org.jetbrains.kotlin.android' version '1.7.10'
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -18,7 +19,7 @@ dependencyResolutionManagement {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
 rootProject.name = "SunnyWeather"
 include ':app'
-include ':app-data'
 include ':app_data'
