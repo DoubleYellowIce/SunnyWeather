@@ -130,13 +130,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         }
     }
 
-    private fun startLocateUser() {
-        if (locationClient == null) {
-            initLocationClient()
-        }
-        locationClient!!.start()
-    }
-
     private fun initLocationClient() {
         locationClient = LocationClient(applicationContext).apply {
             registerLocationListener(object : BDAbstractLocationListener() {
@@ -164,6 +157,13 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
 
     private fun stopLocateUser() {
         locationClient!!.stop()
+    }
+
+    private fun startLocateUser() {
+        if (locationClient == null) {
+            initLocationClient()
+        }
+        locationClient!!.start()
     }
 
     private fun permissionForLocationIsGranted(): Boolean {
