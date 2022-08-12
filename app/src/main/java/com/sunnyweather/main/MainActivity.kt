@@ -43,7 +43,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     lateinit var viewModel: MainViewModel
     private lateinit var picker: AddressPicker
     private lateinit var binding: ActivityMainBinding
-    private lateinit var locationClient: LocationClient
+    private var locationClient: LocationClient? = null
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -62,7 +62,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             provinceName = viewModel.getCurrentProvinceValue(),
             cityName = viewModel.getCurrentCityValue()
         )
-        initLocationClient()
         if (permissionForLocationIsGranted()) {
             startLocateUser()
         } else {
@@ -94,31 +93,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             getCurrentLocationCombineWeatherInfo()
         }
 
-    }
-
-    private fun initLocationClient() {
-        locationClient = LocationClient(applicationContext).apply {
-            registerLocationListener(object : BDAbstractLocationListener() {
-                override fun onReceiveLocation(location: BDLocation?) {
-                    val locatedCity = location?.city!!
-                    val locatedProvince = location.province!!
-                    if (locatedCityIsNotSameAsCurrentCity(locatedCity)) {
-                        val positiveCallback = OnClickListener { _, _ ->
-                            viewModel.updateProvinceAndCity(locatedProvince, locatedCity)
-                            getCurrentLocationCombineWeatherInfo()
-                        }
-                        askUserWillingToChangeCurrentCity(locatedProvince, positiveCallback)
-                    }
-                    stopLocateUser()
-                }
-            })
-            locOption = LocationClientOption().apply {
-                scanSpan = 1000
-                openGps = true
-                setIsNeedAddress(true)
-                setCoorType("WGS84")
-            }
-        }
     }
 
     private fun locatedCityIsNotSameAsCurrentCity(locatedCity: String): Boolean {
@@ -161,11 +135,39 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
     }
 
     private fun startLocateUser() {
-        locationClient.start()
+        if (locationClient == null) {
+            initLocationClient()
+        }
+        locationClient!!.start()
+    }
+
+    private fun initLocationClient() {
+        locationClient = LocationClient(applicationContext).apply {
+            registerLocationListener(object : BDAbstractLocationListener() {
+                override fun onReceiveLocation(location: BDLocation?) {
+                    val locatedCity = location?.city!!
+                    val locatedProvince = location.province!!
+                    if (locatedCityIsNotSameAsCurrentCity(locatedCity)) {
+                        val positiveCallback = OnClickListener { _, _ ->
+                            viewModel.updateProvinceAndCity(locatedProvince, locatedCity)
+                            getCurrentLocationCombineWeatherInfo()
+                        }
+                        askUserWillingToChangeCurrentCity(locatedProvince, positiveCallback)
+                    }
+                    stopLocateUser()
+                }
+            })
+            locOption = LocationClientOption().apply {
+                scanSpan = 1000
+                openGps = true
+                setIsNeedAddress(true)
+                setCoorType("WGS84")
+            }
+        }
     }
 
     private fun stopLocateUser() {
-        locationClient.stop()
+        locationClient!!.stop()
     }
 
     private fun permissionForLocationIsGranted(): Boolean {
