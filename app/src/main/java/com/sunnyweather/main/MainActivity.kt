@@ -2,13 +2,10 @@ package com.sunnyweather.main
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.DialogInterface.OnClickListener
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.baidu.location.BDAbstractLocationListener
@@ -31,7 +28,7 @@ import data.weather.model.CombineWeatherInfo
 import javax.inject.Inject
 
 
-class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener {
+class MainActivity : BaseActivity(), MainContract.View {
 
     @Inject
     lateinit var viewModel: MainViewModel
@@ -39,14 +36,11 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener {
     private var locationClient: LocationClient? = null
     private lateinit var binding: ActivityMainBinding
 
-
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun init() {
         setUpBinding()
         viewModel.retrieveProvinceAndCityFromSP()
@@ -78,9 +72,43 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener {
     }
 
     private fun setUpListeners() {
-        binding.currentLocation.setOnClickListener(this)
-        binding.swipeRefreshLayout.setOnRefreshListener() {
-            getCurrentLocationCombineWeatherInfo()
+        binding.apply {
+            currentLocation.setOnClickListener {
+                if (picker == null) {
+                    initPicker(
+                        provinceName = viewModel.getCurrentProvinceValue(),
+                        cityName = viewModel.getCurrentCityValue()
+                    )
+                }
+                picker!!.show()
+            }
+            swipeRefreshLayout.setOnRefreshListener() {
+                getCurrentLocationCombineWeatherInfo()
+            }
+        }
+    }
+
+    private fun initPicker(provinceName: String, cityName: String) {
+        DialogConfig.setDialogStyle(DialogStyle.Two)
+        picker = AddressPicker(this).apply {
+            setAddressMode(
+                "city.json", AddressMode.PROVINCE_CITY,
+                AddressJsonParser.Builder()
+                    .provinceCodeField("code")
+                    .provinceNameField("name")
+                    .provinceChildField("city")
+                    .cityCodeField("code")
+                    .cityNameField("name")
+                    .cityChildField("area")
+                    .countyCodeField("code")
+                    .countyNameField("name")
+                    .build()
+            )
+            setOnAddressPickedListener { province, city, _ ->
+                viewModel.updateProvinceAndCity(province!!.name, city!!.name)
+                getCurrentLocationCombineWeatherInfo()
+            }
+            setDefaultValue(provinceName, cityName, "")
         }
     }
 
@@ -196,40 +224,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener {
 
     private fun showErrorToast() {
         Toast.makeText(this, "获取天气数据失败，请稍后重试", Toast.LENGTH_LONG).show()
-    }
-
-    override fun onClick(v: View?) {
-        if (picker == null) {
-            initPicker(
-                provinceName = viewModel.getCurrentProvinceValue(),
-                cityName = viewModel.getCurrentCityValue()
-            )
-        }
-        picker!!.show()
-    }
-
-    private fun initPicker(provinceName: String, cityName: String) {
-        DialogConfig.setDialogStyle(DialogStyle.Two)
-        picker = AddressPicker(this).apply {
-            setAddressMode(
-                "city.json", AddressMode.PROVINCE_CITY,
-                AddressJsonParser.Builder()
-                    .provinceCodeField("code")
-                    .provinceNameField("name")
-                    .provinceChildField("city")
-                    .cityCodeField("code")
-                    .cityNameField("name")
-                    .cityChildField("area")
-                    .countyCodeField("code")
-                    .countyNameField("name")
-                    .build()
-            )
-            setOnAddressPickedListener { province, city, _ ->
-                viewModel.updateProvinceAndCity(province!!.name, city!!.name)
-                getCurrentLocationCombineWeatherInfo()
-            }
-            setDefaultValue(provinceName, cityName, "")
-        }
     }
 
     private fun doNothing() {
