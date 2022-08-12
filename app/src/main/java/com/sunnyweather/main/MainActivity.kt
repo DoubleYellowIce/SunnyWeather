@@ -67,13 +67,14 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         if (permissionForLocationIsGranted()) {
             startLocateUser()
         } else {
-            requestLocationPermission { allGranted, _, _ ->
+            val requestCallback = RequestCallback { allGranted, _, _ ->
                 if (allGranted) {
                     startLocateUser()
                 } else {
                     doNothing()
                 }
             }
+            requestLocationPermission(requestCallback)
         }
         getCurrentLocationCombineWeatherInfo()
     }
