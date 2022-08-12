@@ -94,6 +94,20 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         return PermissionX.isGranted(this, ACCESS_FINE_LOCATION)
     }
 
+    private fun requestLocationPermission(requestCallback: RequestCallback) {
+        PermissionX.init(this)
+            .permissions(
+                ACCESS_FINE_LOCATION
+            )
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(
+                    deniedList, "获取GPS定位权限可以更方便获取您所在地的天气信息，为您提供更好的服务。",
+                    "欣然接受", "残忍拒绝"
+                )
+            }
+            .request(requestCallback)
+    }
+
     private fun initLocationClient() {
         locationClient = LocationClient(applicationContext).apply {
             registerLocationListener(object : BDAbstractLocationListener() {
@@ -148,23 +162,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         locationClient!!.start()
     }
 
-    private fun requestLocationPermission(requestCallback: RequestCallback) {
-        PermissionX.init(this)
-            .permissions(
-                ACCESS_FINE_LOCATION
-            )
-            .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(
-                    deniedList, "获取GPS定位权限可以更方便获取您所在地的天气信息，为您提供更好的服务。",
-                    "欣然接受", "残忍拒绝"
-                )
-            }
-            .request(requestCallback)
-    }
-
-    private fun doNothing() {
-    }
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onAddressPicked(
         province: ProvinceEntity?, city: CityEntity?, county: CountyEntity?
@@ -197,10 +194,12 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         }
     }
 
-    private fun showErrorToast() {
-        Toast.makeText(this, "获取天气数据失败，请稍后重试", Toast.LENGTH_LONG).show()
+    private fun refreshDataBinding(combineWeatherInfo: CombineWeatherInfo) {
+        binding.currentDetailedWeather =
+            combineWeatherInfo.currentWeather.weather[0].detailedWeather
+        binding.weatherSuggestion = combineWeatherInfo.weatherSuggestion.results[0].suggestion
+        binding.weatherForecastResult = combineWeatherInfo.weatherForecast.results[0]
     }
-
 
     private fun startSwipeFreshLayoutFreshening() {
         binding.swipeRefreshLayout.isRefreshing = true
@@ -210,11 +209,8 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
-    private fun refreshDataBinding(combineWeatherInfo: CombineWeatherInfo) {
-        binding.currentDetailedWeather =
-            combineWeatherInfo.currentWeather.weather[0].detailedWeather
-        binding.weatherSuggestion = combineWeatherInfo.weatherSuggestion.results[0].suggestion
-        binding.weatherForecastResult = combineWeatherInfo.weatherForecast.results[0]
+    private fun showErrorToast() {
+        Toast.makeText(this, "获取天气数据失败，请稍后重试", Toast.LENGTH_LONG).show()
     }
 
     override fun onClick(v: View?) {
@@ -248,4 +244,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         }
     }
 
+    private fun doNothing() {
+    }
 }
