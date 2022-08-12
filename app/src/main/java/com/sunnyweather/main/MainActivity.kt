@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -208,11 +209,18 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
                         startSwipeFreshLayoutFreshening()
                     }
                     ERROR -> {
+                        stopSwipeFreshLayoutFreshening()
+                        showErrorToast()
                         Log.d(SunnyWeatherApplication.TestToken, response.message!!)
+
                     }
                 }
             }
         }
+    }
+
+    private fun showErrorToast() {
+        Toast.makeText(this, "获取天气数据失败，请稍后重试", Toast.LENGTH_LONG).show()
     }
 
 
