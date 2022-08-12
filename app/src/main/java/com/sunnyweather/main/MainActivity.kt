@@ -148,7 +148,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
                             viewModel.updateProvinceAndCity(locatedProvince, locatedCity)
                             getCurrentLocationCombineWeatherInfo()
                         }
-                        askUserWillingToChangeCurrentCity(locatedProvince, positiveCallback)
+                        askUserWillingToChangeCurrentCity(locatedCity, positiveCallback)
                     }
                     stopLocateUser()
                 }
