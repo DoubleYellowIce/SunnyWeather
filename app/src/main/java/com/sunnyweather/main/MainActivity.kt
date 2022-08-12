@@ -94,22 +94,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         return PermissionX.isGranted(this, ACCESS_FINE_LOCATION)
     }
 
-
-
-    private fun askUserWillingToChangeCurrentCity(
-        locatedCity: String,
-        positiveCallback: OnClickListener
-    ) {
-        AlertDialog.Builder(this@MainActivity).apply {
-            setTitle("温馨提示")
-            setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
-            setPositiveButton("是", positiveCallback)
-            setNegativeButton("否") { _, _ ->
-                doNothing()
-            }
-        }.show()
-    }
-
     private fun initLocationClient() {
         locationClient = LocationClient(applicationContext).apply {
             registerLocationListener(object : BDAbstractLocationListener() {
@@ -137,6 +121,20 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
 
     private fun locatedCityIsNotSameAsCurrentCity(locatedCity: String): Boolean {
         return locatedCity != viewModel.getCurrentCityValue()
+    }
+
+    private fun askUserWillingToChangeCurrentCity(
+        locatedCity: String,
+        positiveCallback: OnClickListener
+    ) {
+        AlertDialog.Builder(this@MainActivity).apply {
+            setTitle("温馨提示")
+            setMessage("定位显示您在$locatedCity，是否需要显示该城市的天气信息")
+            setPositiveButton("是", positiveCallback)
+            setNegativeButton("否") { _, _ ->
+                doNothing()
+            }
+        }.show()
     }
 
     private fun stopLocateUser() {
