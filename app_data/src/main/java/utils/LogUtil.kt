@@ -16,7 +16,7 @@ object LogUtil {
     private var level = VERBOSE
 
     @JvmStatic
-    fun v(tag: String, msg: String) {
+    fun v(tag: String = "DoubleYellowIce", msg: String) {
         if (level <= VERBOSE) {
             Log.v(tag, msg)
         }
@@ -40,6 +40,7 @@ object LogUtil {
         }
 
     }
+
     fun e(tag: String, msg: String) {
         if (level <= ERROR) {
             Log.e(tag, msg)
