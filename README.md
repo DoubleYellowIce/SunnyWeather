@@ -41,15 +41,13 @@
           if (permissionForLocationIsGranted()) {
               startLocateUser()
           } else {
-              val requestCallback = RequestCallback { allGranted, _, _ ->
-                  if (allGranted) {
+              val requestCallback = RequestCallback { permissionForLocationIsGranted, _, _ ->
+                  if (permissionForLocationIsGranted) {
                       startLocateUser()
                   } else {
                       doNothing()
                   }
               }
-              requestLocationPermission(requestCallback)
-          }
           getCurrentLocationCombineWeatherInfo()
       }
   ```
@@ -60,7 +58,7 @@
   2. 判断是否有定位权限。
      1. 有。直接定位用户。
      2. 无。去请求定位权限，当用户同意时再进行定位。
-  
+
   3. 根据定位获取天气功能。
   
   从这上面三点就可以进一步推出这个应用至少有获取用户所在城市的天气信息的功能，这样的代码在项目还有很多处，这里不一一列举了。
