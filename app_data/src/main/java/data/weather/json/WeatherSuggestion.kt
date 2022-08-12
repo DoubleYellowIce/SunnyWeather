@@ -25,20 +25,20 @@ data class WeatherSuggestion(val results: List<Result>) : BasicWeatherInfo() {
         val flu: Flu,
         val sport: Sport,
         val travel: Travel,
-                           val uv: Uv
-                           )
+        val uv: Uv
+    )
 
-    data class CarWashing(val brief:String,val detail:String)
+    data class CarWashing(val brief: String, val detail: String)
 
-    data class Dressing(val brief:String,val detail:String)
+    data class Dressing(val brief: String, val detail: String)
 
-    data class Flu(val brief:String,val detail:String)
+    data class Flu(val brief: String, val detail: String)
 
-    data class Sport(val brief:String,val detail:String)
+    data class Sport(val brief: String, val detail: String)
 
-    data class Travel(val brief:String,val detail:String)
+    data class Travel(val brief: String, val detail: String)
 
-    data class Uv(val brief:String,val detail:String)
+    data class Uv(val brief: String, val detail: String)
 
 }
 

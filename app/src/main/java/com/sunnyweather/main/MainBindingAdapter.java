@@ -48,12 +48,11 @@ public class MainBindingAdapter {
                 Sky sky = getSky(daily.getCode_day());
                 skyIcon.setImageResource(sky.getIcon());
                 skyInfo.setText(daily.getText_day());
-                        String tempText = daily.getLow()+"~"+daily.getHigh()+"℃";
-                        //daily.low.toInt() ~ ${daily.high.toInt()} ℃"
-                        temperatureInfo.setText(tempText);
-                        forecastLayout.addView(view);
-                }
+                String tempText = daily.getLow() + "~" + daily.getHigh() + "℃";
+                temperatureInfo.setText(tempText);
+                forecastLayout.addView(view);
+            }
 
+        }
     }
-}
 }

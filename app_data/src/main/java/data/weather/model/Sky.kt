@@ -1,12 +1,14 @@
 package data.weather.model
 
 import com.example.app_data.R
-//the aim of this class is to map the weather code to the Sky class which contains the background image and icon image
+
+//the aim of this class is to map the weather weatherCode to the Sky class which contains the background image and icon image
 //if you want to know more specifically,please check the Xinzhi Weather API(the link below)
 //https://seniverse.yuque.com/books/share/e52aa43f-8fe9-4ffa-860d-96c0f3cf1c49/yev2c3
 //the letter i in the name of icon image stands for icon
 
 data class Sky(val bg: Int, val icon: Int)
+
 private val sky = mapOf(
     "0" to Sky(R.drawable.bg_clear_day, R.drawable.i0),
     "1" to Sky(R.drawable.bg_clear_night, R.drawable.i1),

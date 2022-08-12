@@ -16,20 +16,21 @@ data class WeatherForecast(val results: List<Result>) : BasicWeatherInfo() {
         val timezone_offset: String
     )
 
-    data class Daily(val date:String,
-                     val text_day:String,
-                     val code_day:String,
-                     val text_night:String,
-                     val code_night:String,
-                     val high:String,
-                     val low:String,
-                     val rainfall:String,
-                     val precip:String,
-                     val wind_direction:String,
-                     val wind_direction_degree: String,
-                     val wind_speed:String,
-                     val wind_scale:String,
-                     val humidity:String
+    data class Daily(
+        val date: String,
+        val text_day: String,
+        val code_day: String,
+        val text_night: String,
+        val code_night: String,
+        val high: String,
+        val low: String,
+        val rainfall: String,
+        val precip: String,
+        val wind_direction: String,
+        val wind_direction_degree: String,
+        val wind_speed: String,
+        val wind_scale: String,
+        val humidity: String
     )
 
 
