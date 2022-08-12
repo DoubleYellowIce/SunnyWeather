@@ -112,26 +112,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         }.show()
     }
 
-    private fun initPicker(provinceName: String, cityName: String) {
-        DialogConfig.setDialogStyle(DialogStyle.Two)
-        picker = AddressPicker(this).apply {
-            setAddressMode(
-                "city.json", AddressMode.PROVINCE_CITY,
-                AddressJsonParser.Builder()
-                    .provinceCodeField("weatherCode")
-                    .provinceNameField("name")
-                    .provinceChildField("city")
-                    .cityCodeField("weatherCode")
-                    .cityNameField("name")
-                    .cityChildField("area")
-                    .countyCodeField("weatherCode")
-                    .countyNameField("name")
-                    .build()
-            )
-            setOnAddressPickedListener(this@MainActivity)
-            setDefaultValue(provinceName, cityName, "")
-        }
-    }
+
 
     private fun initLocationClient() {
         locationClient = LocationClient(applicationContext).apply {
@@ -246,6 +227,27 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             )
         }
         picker!!.show()
+    }
+
+    private fun initPicker(provinceName: String, cityName: String) {
+        DialogConfig.setDialogStyle(DialogStyle.Two)
+        picker = AddressPicker(this).apply {
+            setAddressMode(
+                "city.json", AddressMode.PROVINCE_CITY,
+                AddressJsonParser.Builder()
+                    .provinceCodeField("weatherCode")
+                    .provinceNameField("name")
+                    .provinceChildField("city")
+                    .cityCodeField("weatherCode")
+                    .cityNameField("name")
+                    .cityChildField("area")
+                    .countyCodeField("weatherCode")
+                    .countyNameField("name")
+                    .build()
+            )
+            setOnAddressPickedListener(this@MainActivity)
+            setDefaultValue(provinceName, cityName, "")
+        }
     }
 
 }
