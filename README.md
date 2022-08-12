@@ -48,6 +48,8 @@
                       doNothing()
                   }
               }
+              requestLocationPermission(requestCallback)
+          }
           getCurrentLocationCombineWeatherInfo()
       }
   ```
