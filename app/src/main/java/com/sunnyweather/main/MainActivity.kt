@@ -88,7 +88,10 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         binding.swipeRefreshLayout.setOnRefreshListener() {
             getCurrentLocationCombineWeatherInfo()
         }
+    }
 
+    private fun permissionForLocationIsGranted(): Boolean {
+        return PermissionX.isGranted(this, ACCESS_FINE_LOCATION)
     }
 
     private fun locatedCityIsNotSameAsCurrentCity(locatedCity: String): Boolean {
@@ -164,10 +167,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             initLocationClient()
         }
         locationClient!!.start()
-    }
-
-    private fun permissionForLocationIsGranted(): Boolean {
-        return PermissionX.isGranted(this, ACCESS_FINE_LOCATION)
     }
 
     private fun requestLocationPermission(requestCallback: RequestCallback) {
