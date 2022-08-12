@@ -7,12 +7,14 @@ import data.weather.model.CombineWeatherInfo
 interface MainContract {
 
     interface View {
-        fun handleUserLocation()
     }
 
     interface ViewModel {
-        fun getUserLocation()
 
         fun getCurrentLocationCombineWeatherInfo(): LiveData<Response<CombineWeatherInfo>>
+
+        fun retrieveProvinceAndCityFromSP()
+
+        fun updateProvinceAndCity(province: String, city: String)
     }
 }

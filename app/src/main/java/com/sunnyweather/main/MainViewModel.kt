@@ -5,20 +5,39 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import data.Response
+import data.sharepreferences.SharePreferencesManager
 import data.weather.model.CombineWeatherInfo
 import data.weather.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import javax.inject.Inject
 
-class MainViewModel : ViewModel(), LifecycleObserver, MainContract.ViewModel {
+class MainViewModel @Inject constructor() : ViewModel(), LifecycleObserver, MainContract.ViewModel {
 
     lateinit var weatherRepository: WeatherRepository
 
-    val currentLocation = MutableLiveData<String>()
+    lateinit var sharePreferencesManager: SharePreferencesManager
 
-    override fun getUserLocation() {
-        TODO("Not yet implemented")
+    val currentCity = MutableLiveData<String>()
+
+    private val currentProvince = MutableLiveData<String>()
+
+    override fun retrieveProvinceAndCityFromSP() {
+        updateProvinceAndCity(
+            sharePreferencesManager.getProvince()!!,
+            sharePreferencesManager.getCity()!!
+        )
+    }
+
+    override fun updateProvinceAndCity(province: String, city: String) {
+        if (isProvinceName(province)) {
+            setCurrentProvince(province)
+        } else {
+            setCurrentProvince(city)
+        }
+        setCurrentCity(city)
+        sharePreferencesManager.setProvinceAndCity(province, city)
     }
 
     override fun getCurrentLocationCombineWeatherInfo() =
@@ -27,13 +46,13 @@ class MainViewModel : ViewModel(), LifecycleObserver, MainContract.ViewModel {
             try {
                 coroutineScope {
                     val currentWeather = async(Dispatchers.IO) {
-                        weatherRepository.getCurrentWeatherInfo(currentLocation.value!!)
+                        weatherRepository.getCurrentWeatherInfo(currentCity.value!!)
                     }
                     val weatherSuggestion = async(Dispatchers.IO) {
-                        weatherRepository.getWeatherSuggestion(currentLocation.value!!)
+                        weatherRepository.getWeatherSuggestion(currentCity.value!!)
                     }
                     val weatherForecast = async(Dispatchers.IO) {
-                        weatherRepository.getWeatherForecast(currentLocation.value!!)
+                        weatherRepository.getWeatherForecast(currentCity.value!!)
                     }
                     emit(
                         Response.success(
@@ -49,6 +68,34 @@ class MainViewModel : ViewModel(), LifecycleObserver, MainContract.ViewModel {
                 emit(Response.error(data = null, message = exception.message ?: "Error Occurred!"))
             }
         }
+
+    private fun setCurrentProvince(province: String) {
+        currentProvince.value = province
+    }
+
+    fun getCurrentProvinceValue(): String {
+        return currentProvince.value ?: ""
+    }
+
+    fun getCurrentCityValue(): String {
+        return currentCity.value ?: ""
+    }
+
+    private fun setCurrentCity(city: String) {
+        currentCity.value = city
+    }
+
+    //when the provinceName is one of "北京市","上海市","天津市","重庆市"
+    //the provinceName is actually a cityName
+    //we should treat it as cityName to get the weather information from the internet
+    private fun isProvinceName(provinceName: String): Boolean {
+        return when (provinceName) {
+            "北京市", "上海市", "天津市", "重庆市" -> {
+                false
+            }
+            else -> true
+        }
+    }
 }
 
 

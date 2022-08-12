@@ -6,6 +6,7 @@ import com.sunnyweather.main.MainContract
 import com.sunnyweather.main.MainViewModel
 import dagger.Module
 import dagger.Provides
+import data.sharepreferences.SharePreferencesManager
 import data.weather.repository.WeatherRepository
 
 @Module
@@ -14,11 +15,13 @@ class MainActivityModule {
     @Provides
     fun provideMainViewModel(
         mainActivity: MainActivity,
-        weatherRepository: WeatherRepository
+        weatherRepository: WeatherRepository,
+        sharePreferencesManager: SharePreferencesManager
     ): MainViewModel {
-        val mainViewModel = ViewModelProvider(mainActivity).get(MainViewModel::class.java)
-        mainViewModel.weatherRepository = weatherRepository
-        return mainViewModel
+        return ViewModelProvider(mainActivity).get(MainViewModel::class.java).apply {
+            this.weatherRepository = weatherRepository
+            this.sharePreferencesManager = sharePreferencesManager
+        }
     }
 
     @Provides
