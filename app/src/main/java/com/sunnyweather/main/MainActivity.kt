@@ -94,9 +94,7 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         return PermissionX.isGranted(this, ACCESS_FINE_LOCATION)
     }
 
-    private fun locatedCityIsNotSameAsCurrentCity(locatedCity: String): Boolean {
-        return locatedCity != viewModel.getCurrentCityValue()
-    }
+
 
     private fun askUserWillingToChangeCurrentCity(
         locatedCity: String,
@@ -111,8 +109,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
             }
         }.show()
     }
-
-
 
     private fun initLocationClient() {
         locationClient = LocationClient(applicationContext).apply {
@@ -137,6 +133,10 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
                 setCoorType("WGS84")
             }
         }
+    }
+
+    private fun locatedCityIsNotSameAsCurrentCity(locatedCity: String): Boolean {
+        return locatedCity != viewModel.getCurrentCityValue()
     }
 
     private fun stopLocateUser() {
