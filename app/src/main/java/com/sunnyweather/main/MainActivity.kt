@@ -67,8 +67,8 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         if (permissionForLocationIsGranted()) {
             startLocateUser()
         } else {
-            val requestCallback = RequestCallback { allGranted, _, _ ->
-                if (allGranted) {
+            val requestCallback = RequestCallback { permissionForLocationIsGranted, _, _ ->
+                if (permissionForLocationIsGranted) {
                     startLocateUser()
                 } else {
                     doNothing()
