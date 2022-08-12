@@ -16,7 +16,7 @@
 
   尽管SunnyWeather本身不大，但仍将其划分为了两个module，一个为app主module，该module主要来存放应用的核心代码，如Activity，ViewModel，另一个是app_data子module，如其名所示，该module主要存放model类以及获取网络数据的相关类。
 
-  在企业开发中，往往都是多module进行开发的，而不是将全部代码都放至一个app主module里，这么做的好处是module可以在不同应用中共享，但同时也会带来一定的不便，比如说子类module无法获取到主module的类，再比如说如何管理两个module的第三方库依赖，SunnyWeather作为一个小应用，用来提前熟悉一下企业的开发模式是再恰当不过。
+  在企业开发中，往往都是多module进行开发的，而不是将全部代码都放至一个app主module里，这么做的好处是module可以在不同应用中共享，但这同时也会带来一定的不便，比如说子类module无法获取到主module的类，再比如说如何统一管理多个module的第三方库依赖，SunnyWeather作为一个小应用，用来提前熟悉一下企业的开发模式是再恰当不过。
 
 - 主流第三方库的使用
 
