@@ -19,10 +19,6 @@ import com.github.gzuliyujiang.dialog.DialogConfig
 import com.github.gzuliyujiang.dialog.DialogStyle
 import com.github.gzuliyujiang.wheelpicker.AddressPicker
 import com.github.gzuliyujiang.wheelpicker.annotation.AddressMode
-import com.github.gzuliyujiang.wheelpicker.contract.OnAddressPickedListener
-import com.github.gzuliyujiang.wheelpicker.entity.CityEntity
-import com.github.gzuliyujiang.wheelpicker.entity.CountyEntity
-import com.github.gzuliyujiang.wheelpicker.entity.ProvinceEntity
 import com.github.gzuliyujiang.wheelpicker.utility.AddressJsonParser
 import com.permissionx.guolindev.PermissionX
 import com.permissionx.guolindev.callback.RequestCallback
@@ -32,12 +28,10 @@ import com.sunnyweather.base.BaseActivity
 import com.sunnyweather.databinding.ActivityMainBinding
 import data.Status.*
 import data.weather.model.CombineWeatherInfo
-import utils.LogUtil
 import javax.inject.Inject
 
 
-class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
-    OnAddressPickedListener {
+class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener {
 
     @Inject
     lateinit var viewModel: MainViewModel
@@ -162,15 +156,6 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
         locationClient!!.start()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun onAddressPicked(
-        province: ProvinceEntity?, city: CityEntity?, county: CountyEntity?
-    ) {
-        LogUtil.v(msg = "the address is $province $city $county")
-        viewModel.updateProvinceAndCity(province!!.name, city!!.name)
-        getCurrentLocationCombineWeatherInfo()
-    }
-
     private fun getCurrentLocationCombineWeatherInfo() {
         viewModel.getCurrentLocationCombineWeatherInfo().observe(this) {
             it?.let { response ->
@@ -239,7 +224,10 @@ class MainActivity : BaseActivity(), MainContract.View, View.OnClickListener,
                     .countyNameField("name")
                     .build()
             )
-            setOnAddressPickedListener(this@MainActivity)
+            setOnAddressPickedListener { province, city, _ ->
+                viewModel.updateProvinceAndCity(province!!.name, city!!.name)
+                getCurrentLocationCombineWeatherInfo()
+            }
             setDefaultValue(provinceName, cityName, "")
         }
     }
