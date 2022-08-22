@@ -2,7 +2,7 @@
 
 <p align="center"><img src="https://user-images.githubusercontent.com/65336599/139616040-bba91aab-4060-4eec-a887-a47d40ac56fa.gif" width="280" height="550"/><img src="https://user-images.githubusercontent.com/65336599/139671076-e6d0d377-f86e-4354-8842-2856cc93b488.gif" width="280" height="550"/></p>
 
-### 为什么你要Star这个项目
+### 项目亮点
 
 尽管SunnyWeather本身是一款简单的安卓天气应用，但麻雀虽小，五脏俱全。
 
